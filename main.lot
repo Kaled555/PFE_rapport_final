@@ -1,0 +1,49 @@
+\babel@toc {french}{}\relax 
+\babel@toc {french}{}\relax 
+\addvspace {10\p@ }
+\contentsline {xchapter}{Cadre du Projet}{4}{}%
+\contentsline {table}{\numberline {\if@rl \I {1.1}\else \textLR {1.1}\fi }{\ignorespaces Organisation des sprints SCRUM du projet}}{8}{}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{État de l'Art}{11}{}%
+\contentsline {table}{\numberline {\if@rl \I {1.2}\else \textLR {2.1}\fi }{\ignorespaces Principaux cadres normatifs en cybersécurité}}{12}{}%
+\contentsline {table}{\numberline {\if@rl \I {2.2}\else \textLR {2.2}\fi }{\ignorespaces Comparatif des solutions SIEM — veille technologique}}{17}{}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Spécification des Besoins}{19}{}%
+\contentsline {table}{\numberline {\if@rl \I {1.3}\else \textLR {3.1}\fi }{\ignorespaces Identification des acteurs du système}}{20}{}%
+\contentsline {table}{\numberline {\if@rl \I {2.3}\else \textLR {3.2}\fi }{\ignorespaces Cas d'utilisation — Vue d'ensemble du système}}{20}{}%
+\contentsline {table}{\numberline {\if@rl \I {3.3}\else \textLR {3.3}\fi }{\ignorespaces Correspondance Besoins — Fonctionnalités — Solutions techniques}}{21}{}%
+\contentsline {table}{\numberline {\if@rl \I {4.3}\else \textLR {3.4}\fi }{\ignorespaces Cas d'utilisation — Gestion des Événements et Authentification}}{22}{}%
+\contentsline {table}{\numberline {\if@rl \I {5.3}\else \textLR {3.5}\fi }{\ignorespaces Cas d'utilisation — Déroulement des Réunions Virtuelles}}{22}{}%
+\contentsline {table}{\numberline {\if@rl \I {6.3}\else \textLR {3.6}\fi }{\ignorespaces Cas d'utilisation — Intelligence Artificielle : Chatbot et Traduction}}{23}{}%
+\contentsline {table}{\numberline {\if@rl \I {7.3}\else \textLR {3.7}\fi }{\ignorespaces Cas d'utilisation — Gestion RGPD et Données Personnelles (UC\_R01 à UC\_R10)}}{23}{}%
+\contentsline {table}{\numberline {\if@rl \I {8.3}\else \textLR {3.8}\fi }{\ignorespaces Synthèse des besoins non fonctionnels}}{24}{}%
+\contentsline {table}{\numberline {\if@rl \I {9.3}\else \textLR {3.9}\fi }{\ignorespaces Comparatif des solutions de visioconférence}}{24}{}%
+\contentsline {table}{\numberline {\if@rl \I {10.3}\else \textLR {3.10}\fi }{\ignorespaces Comparatif des solutions ERP}}{25}{}%
+\contentsline {table}{\numberline {\if@rl \I {11.3}\else \textLR {3.11}\fi }{\ignorespaces Comparatif des solutions de chatbot / IA conversationnelle}}{25}{}%
+\contentsline {table}{\numberline {\if@rl \I {12.3}\else \textLR {3.12}\fi }{\ignorespaces Comparatif des fournisseurs d'infrastructure cloud}}{26}{}%
+\contentsline {table}{\numberline {\if@rl \I {13.3}\else \textLR {3.13}\fi }{\ignorespaces Synthèse de la justification des choix techniques}}{27}{}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Conception de l'Architecture}{29}{}%
+\contentsline {table}{\numberline {\if@rl \I {1.4}\else \textLR {4.1}\fi }{\ignorespaces Justification des choix technologiques}}{31}{}%
+\contentsline {table}{\numberline {\if@rl \I {2.4}\else \textLR {4.2}\fi }{\ignorespaces Description des classes du système}}{33}{}%
+\contentsline {table}{\numberline {\if@rl \I {3.4}\else \textLR {4.3}\fi }{\ignorespaces Correspondance menaces / mesures de protection (modèle STRIDE)}}{35}{}%
+\contentsline {table}{\numberline {\if@rl \I {4.4}\else \textLR {4.4}\fi }{\ignorespaces Matrice des rôles et permissions (RBAC)}}{37}{}%
+\contentsline {table}{\numberline {\if@rl \I {5.4}\else \textLR {4.5}\fi }{\ignorespaces Services Docker du système}}{40}{}%
+\addvspace {10\p@ }
+\contentsline {xchapter}{Implémentation et Déploiement}{44}{}%
+\contentsline {table}{\numberline {\if@rl \I {1.5}\else \textLR {5.1}\fi }{\ignorespaces Environnement et outils de développement}}{44}{}%
+\contentsline {table}{\numberline {\if@rl \I {2.5}\else \textLR {5.2}\fi }{\ignorespaces Routes API du module ai\_healthcare\_event}}{46}{}%
+\contentsline {table}{\numberline {\if@rl \I {3.5}\else \textLR {5.3}\fi }{\ignorespaces Composants techniques du chatbot IA par couche}}{47}{}%
+\contentsline {table}{\numberline {\if@rl \I {4.5}\else \textLR {5.4}\fi }{\ignorespaces Mécanismes de sécurité implémentés sur l'endpoint chatbot}}{49}{}%
+\contentsline {table}{\numberline {\if@rl \I {5.5}\else \textLR {5.5}\fi }{\ignorespaces Bénéfices du chatbot IA — axes et impacts}}{50}{}%
+\contentsline {table}{\numberline {\if@rl \I {6.5}\else \textLR {5.6}\fi }{\ignorespaces Langues supportées par l'agent de traduction}}{51}{}%
+\contentsline {table}{\numberline {\if@rl \I {7.5}\else \textLR {5.7}\fi }{\ignorespaces Matrice des rôles RBAC implémentée}}{52}{}%
+\contentsline {table}{\numberline {\if@rl \I {8.5}\else \textLR {5.8}\fi }{\ignorespaces Stratégie de tests — outils et objectifs}}{53}{}%
+\contentsline {table}{\numberline {\if@rl \I {9.5}\else \textLR {5.9}\fi }{\ignorespaces Analyse STRIDE étendue — Menace, Risque, Contre-mesure, Implémentation, Résultat}}{54}{}%
+\contentsline {table}{\numberline {\if@rl \I {10.5}\else \textLR {5.10}\fi }{\ignorespaces Résultats des tests fonctionnels}}{55}{}%
+\contentsline {table}{\numberline {\if@rl \I {11.5}\else \textLR {5.11}\fi }{\ignorespaces Résultats des tests de sécurité applicative}}{56}{}%
+\contentsline {table}{\numberline {\if@rl \I {12.5}\else \textLR {5.12}\fi }{\ignorespaces Architecture de déploiement — 7 conteneurs Docker}}{56}{}%
+\babel@toc {french}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {french}{}\relax 
+\babel@toc {french}{}\relax 

@@ -1,0 +1,120 @@
+\babel@toc {french}{}\relax 
+\babel@toc {french}{}\relax 
+\select@language {french}
+\select@language {french}
+\select@language {french}
+\select@language {french}
+\select@language {french}
+\select@language {french}
+\contentsline {chapter}{Liste des Abréviations}{xi}{}%
+\select@language {french}
+\contentsline {chapter}{Introduction Générale}{1}{}%
+\select@language {french}
+\contentsline {chapter}{\numberline {\textLR {1}}\bgroup \beginL \latintext Cadre du Projet\endL \egroup }{3}{}%
+\contentsline {section}{\numberline {\filterminitoc {1.}1}Présentation de l'Organisme d'Accueil}{4}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.1.1}\else \textLR {1.1.1}\fi }Présentation générale de TEK-UP}{4}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.1.1}\else \textLR {1.1.2}\fi }Secteur d'activité}{4}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.1.1}\else \textLR {1.1.3}\fi }Mission et valeurs}{5}{}%
+\contentsline {section}{\numberline {\filterminitoc {1.}2}Contexte du Projet}{5}{}%
+\contentsline {section}{\numberline {\filterminitoc {1.}3}Problématique}{6}{}%
+\contentsline {section}{\numberline {\filterminitoc {1.}4}Objectifs du Projet}{6}{}%
+\contentsline {section}{\numberline {\filterminitoc {1.}5}Méthodologie de Travail — SCRUM}{7}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.5.1}\else \textLR {1.5.1}\fi }Choix de la méthodologie agile}{7}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.5.1}\else \textLR {1.5.2}\fi }Organisation en sprints}{7}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.5.1}\else \textLR {1.5.3}\fi }Rôles et cérémonies SCRUM}{8}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.5.1}\else \textLR {1.5.4}\fi }Outils de gestion de projet}{8}{}%
+\select@language {french}
+\contentsline {chapter}{\numberline {\textLR {2}}\bgroup \beginL \latintext État de l'Art\endL \egroup }{10}{}%
+\contentsline {section}{\numberline {\filterminitoc {2.}1}Concepts Fondamentaux de la Cybersécurité}{11}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.1.2}\else \textLR {2.1.1}\fi }La triade CIA}{11}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.1.2}\else \textLR {2.1.2}\fi }Chiffrement et protocoles sécurisés}{11}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.1.2}\else \textLR {2.1.3}\fi }Authentification et gestion des identités}{12}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.1.2}\else \textLR {2.1.4}\fi }Modélisation des menaces — STRIDE}{12}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {5.1.2}\else \textLR {2.1.5}\fi }Cadres normatifs de référence}{12}{}%
+\contentsline {section}{\numberline {\filterminitoc {2.}2}Gestion des Incidents de Sécurité}{13}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.2.2}\else \textLR {2.2.1}\fi }Cycle de vie d'un incident}{13}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.2.2}\else \textLR {2.2.2}\fi }Indicateurs clés — TTD et TTR}{13}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.2.2}\else \textLR {2.2.3}\fi }Conformité RGPD et notification des violations}{13}{}%
+\contentsline {section}{\numberline {\filterminitoc {2.}3}Supervision Réseau}{13}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.3.2}\else \textLR {2.3.1}\fi }Définition et enjeux}{13}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.3.2}\else \textLR {2.3.2}\fi }Protocoles et technologies de supervision}{14}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.3.2}\else \textLR {2.3.3}\fi }Supervision dans les architectures conteneurisées}{14}{}%
+\contentsline {section}{\numberline {\filterminitoc {2.}4}Intelligence Artificielle Conversationnelle}{14}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.4.2}\else \textLR {2.4.1}\fi }Traitement du Langage Naturel (NLP)}{14}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.4.2}\else \textLR {2.4.2}\fi }Chatbots et assistants intelligents}{15}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.4.2}\else \textLR {2.4.3}\fi }Agent de traduction multilingue}{15}{}%
+\contentsline {section}{\numberline {\filterminitoc {2.}5}SOC et SIEM — Perspectives de sécurité opérationnelle}{16}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.5.2}\else \textLR {2.5.1}\fi }Security Operations Center (SOC)}{16}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.5.2}\else \textLR {2.5.2}\fi }SIEM — Security Information and Event Management}{16}{}%
+\select@language {french}
+\contentsline {chapter}{\numberline {\textLR {3}}\bgroup \beginL \latintext Spécification des Besoins\endL \egroup }{18}{}%
+\contentsline {section}{\numberline {\filterminitoc {3.}1}Identification des Acteurs}{19}{}%
+\contentsline {section}{\numberline {\filterminitoc {3.}2}Spécification des Besoins Fonctionnels}{20}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.2.3}\else \textLR {3.2.1}\fi }Vue d'ensemble du système}{20}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.2.3}\else \textLR {3.2.2}\fi }Gestion des Événements et Authentification}{21}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.2.3}\else \textLR {3.2.3}\fi }Déroulement des Réunions Virtuelles}{22}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.2.3}\else \textLR {3.2.4}\fi }Intelligence Artificielle — Chatbot et Traduction}{22}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {5.2.3}\else \textLR {3.2.5}\fi }Gestion RGPD et Administration Système}{23}{}%
+\contentsline {section}{\numberline {\filterminitoc {3.}3}Spécification des Besoins Non Fonctionnels}{23}{}%
+\contentsline {section}{\numberline {\filterminitoc {3.}4}Études Comparatives des Outils Retenus}{24}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.4.3}\else \textLR {3.4.1}\fi }Plateformes de visioconférence}{24}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.4.3}\else \textLR {3.4.2}\fi }Progiciels ERP}{25}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.4.3}\else \textLR {3.4.3}\fi }Solutions de chatbot et d'IA conversationnelle}{25}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.4.3}\else \textLR {3.4.4}\fi }Fournisseurs d'infrastructure cloud}{26}{}%
+\contentsline {section}{\numberline {\filterminitoc {3.}5}Justification Globale des Choix Techniques}{26}{}%
+\select@language {french}
+\contentsline {chapter}{\numberline {\textLR {4}}\bgroup \beginL \latintext Conception de l'Architecture\endL \egroup }{28}{}%
+\contentsline {section}{\numberline {\filterminitoc {4.}1}Architecture Globale du Système}{29}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.1.4}\else \textLR {4.1.1}\fi }Vue en couches}{29}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.1.4}\else \textLR {4.1.2}\fi }Justification des choix architecturaux}{30}{}%
+\contentsline {section}{\numberline {\filterminitoc {4.}2}Modélisation Détaillée des Composants}{32}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.2.4}\else \textLR {4.2.1}\fi }Diagramme de classes}{32}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.2.4}\else \textLR {4.2.2}\fi }Diagramme de séquence}{33}{}%
+\contentsline {section}{\numberline {\filterminitoc {4.}3}Architecture de Sécurité}{35}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.3.4}\else \textLR {4.3.1}\fi }Chiffrement des communications}{36}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.3.4}\else \textLR {4.3.2}\fi }Authentification multi-facteurs (MFA)}{36}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.3.4}\else \textLR {4.3.3}\fi }Contrôle d'accès basé sur les rôles (RBAC)}{37}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.3.4}\else \textLR {4.3.4}\fi }Conformité RGPD dans la conception}{37}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {5.3.4}\else \textLR {4.3.5}\fi }Analyse des menaces — Modèle STRIDE}{38}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {6.3.4}\else \textLR {4.3.6}\fi }Principes de Sécurité par Conception}{38}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {7.3.4}\else \textLR {4.3.7}\fi }Tests de Sécurité}{39}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {8.3.4}\else \textLR {4.3.8}\fi }Conformité RGPD — Articles adressés}{39}{}%
+\contentsline {section}{\numberline {\filterminitoc {4.}4}Architecture de Déploiement}{40}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.4.4}\else \textLR {4.4.1}\fi }Conteneurisation avec Docker}{40}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.4.4}\else \textLR {4.4.2}\fi }Infrastructure OVHcloud}{41}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.4.4}\else \textLR {4.4.3}\fi }Pipeline CI/CD}{41}{}%
+\select@language {french}
+\contentsline {chapter}{\numberline {\textLR {5}}\bgroup \beginL \latintext Implémentation et Déploiement\endL \egroup }{43}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}1}Environnement de Développement}{44}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.1.5}\else \textLR {5.1.1}\fi }Outils et technologies}{44}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.1.5}\else \textLR {5.1.2}\fi }Structure du dépôt Git}{45}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}2}Implémentation des Services C\oe {}ur}{45}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.2.5}\else \textLR {5.2.1}\fi }Service d'authentification}{45}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.2.5}\else \textLR {5.2.2}\fi }Gestion des événements via Odoo}{45}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}3}Architecture et Implémentation du Chatbot IA}{46}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.3.5}\else \textLR {5.3.1}\fi }Objectif du chatbot}{47}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.3.5}\else \textLR {5.3.2}\fi }Architecture générale}{47}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.3.5}\else \textLR {5.3.3}\fi }Flux détaillé d'une requête}{48}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.3.5}\else \textLR {5.3.4}\fi }Gestion du contexte conversationnel}{48}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {5.3.5}\else \textLR {5.3.5}\fi }Sécurité du chatbot}{48}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {6.3.5}\else \textLR {5.3.6}\fi }Intégration à la plateforme}{49}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {7.3.5}\else \textLR {5.3.7}\fi }Cas d'utilisation réels}{49}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {8.3.5}\else \textLR {5.3.8}\fi }Bénéfices obtenus}{50}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}4}Agent de Traduction Multilingue}{51}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.4.5}\else \textLR {5.4.1}\fi }Objectif et fonctionnement}{51}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.4.5}\else \textLR {5.4.2}\fi }Langues supportées et exemple}{51}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}5}Implémentation de la Sécurité et du RGPD}{51}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.5.5}\else \textLR {5.5.1}\fi }Contrôle d'accès RBAC et authentification JWT}{51}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.5.5}\else \textLR {5.5.2}\fi }Droits RGPD}{52}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}6}Tests et Validation}{53}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {1.6.5}\else \textLR {5.6.1}\fi }Stratégie de tests}{53}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {2.6.5}\else \textLR {5.6.2}\fi }Analyse des menaces STRIDE et contre-mesures implémentées}{53}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {3.6.5}\else \textLR {5.6.3}\fi }Résultats des tests fonctionnels}{54}{}%
+\contentsline {subsection}{\numberline {\if@rl \I {4.6.5}\else \textLR {5.6.4}\fi }Tests de sécurité applicative}{55}{}%
+\contentsline {section}{\numberline {\filterminitoc {5.}7}Déploiement Final}{56}{}%
+\select@language {french}
+\contentsline {chapter}{Conclusion Générale}{58}{}%
+\babel@toc {french}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {french}{}\relax 
+\babel@toc {french}{}\relax 

@@ -1,0 +1,159 @@
+\chapter{État de l'Art}
+
+\section*{Introduction}
+Cette sous-section présente les fondements conceptuels nécessaires à la compréhension du projet et permet de situer les choix techniques retenus par rapport aux pratiques de référence. La revue bibliographique est structurée autour des quatre axes directement liés aux enjeux du projet : la cybersécurité appliquée à une plateforme événementielle, la gestion des incidents et la conformité réglementaire, la supervision réseau comme notion théorique, et l'intelligence artificielle au service de l'accessibilité des utilisateurs. Pour chaque domaine, la pertinence par rapport au projet est explicitée, et la distinction entre ce qui a été effectivement réalisé et ce qui relève d'une perspective d'évolution est clairement posée.
+
+\section{Concepts Fondamentaux de la Cybersécurité}
+
+\subsection{La triade CIA}
+La cybersécurité repose sur trois propriétés fondamentales, connues sous l'acronyme CIA (Confidentiality, Integrity, Availability) :
+\begin{itemize}
+    \item \textbf{Confidentialité (Confidentiality)} : garantir que l'information n'est accessible qu'aux entités autorisées. Elle est assurée techniquement par le chiffrement (AES-256 au repos, TLS 1.3 en transit) et organisationnellement par le contrôle d'accès \cite{cryptography}.
+    \item \textbf{Intégrité (Integrity)} : garantir que l'information n'est ni altérée ni détruite de manière non autorisée. Les mécanismes de hachage cryptographique (SHA-256, HMAC) et les signatures numériques permettent de détecter toute modification \cite{cryptography}.
+    \item \textbf{Disponibilité (Availability)} : garantir que les systèmes et les données sont accessibles en temps voulu aux utilisateurs légitimes. La résilience aux pannes, la redondance et la protection contre les dénis de service (DoS/DDoS) sont les principaux leviers.
+\end{itemize}
+
+\subsection{Chiffrement et protocoles sécurisés}
+Le chiffrement est le pilier technique de la confidentialité. Les protocoles modernes de référence sont TLS 1.3 (Transport Layer Security), standardisé par l'IETF en 2018 via la RFC 8446, qui sécurise les échanges applicatifs sur TCP, et SRTP (Secure Real-time Transport Protocol, RFC 3711), optimisé pour les flux multimédias UDP dans les communications WebRTC \cite{webrtc}.
+
+L'algorithme AES-256 (Advanced Encryption Standard) est recommandé par le NIST pour le chiffrement des données au repos, offrant une résistance aux attaques par force brute considérée comme pratiquement insurmontable \cite{nist}.
+
+\subsection{Authentification et gestion des identités}
+L'authentification multi-facteurs (MFA) combine plusieurs preuves d'identité — connaissance (mot de passe), possession (token OTP), inhérence (biométrie) — pour réduire drastiquement le risque de compromission de compte. L'usage du standard TOTP (RFC 6238) pour les codes à usage unique garantit la résistance aux attaques par rejeu. Les JSON Web Tokens (JWT, RFC 7519) signés cryptographiquement constituent le standard de facto pour la gestion des sessions dans les architectures microservices \cite{cryptography}.
+
+\subsection{Modélisation des menaces — STRIDE}
+Le modèle STRIDE \cite{stride}, développé par Microsoft, est un cadre méthodologique d'identification des menaces selon six catégories : Spoofing (usurpation), Tampering (altération), Repudiation (répudiation), Information Disclosure (divulgation), Denial of Service (déni de service) et Elevation of Privilege (élévation de privilèges). Ce cadre est aujourd'hui intégré dans les pratiques de Security by Design et recommandé par le NIST \cite{nist}.
+
+\subsection{Cadres normatifs de référence}
+Plusieurs référentiels normatifs structurent la pratique de la cybersécurité :
+
+\begin{longtable}{|m{4cm}|m{6cm}|m{3cm}|}
+\hline
+\textbf{Cadre / Norme} & \textbf{Périmètre} & \textbf{Organisme} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+NIST CSF 2.0 \cite{nist} & Gouvernance, identification, protection, détection, réponse, rétablissement & NIST (USA) \\
+\hline
+ISO/IEC 27001 & Management de la sécurité de l'information (SMSI) & ISO \\
+\hline
+RGPD \cite{rgpd} & Protection des données personnelles dans l'UE & Parlement européen \\
+\hline
+OWASP Top 10 & Vulnérabilités web les plus critiques & OWASP Foundation \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Principaux cadres normatifs en cybersécurité}
+\label{tab:cadres}
+\end{longtable}
+
+\section{Gestion des Incidents de Sécurité}
+
+\subsection{Cycle de vie d'un incident}
+La gestion des incidents de sécurité est un processus structuré visant à minimiser l'impact des événements adverses sur les systèmes d'information. Le NIST SP 800-61 \cite{nist} définit un cycle de vie en quatre phases :
+\begin{enumerate}
+    \item \textbf{Préparation} : mise en place des outils, des procédures et de l'équipe de réponse aux incidents avant qu'un événement ne survienne.
+    \item \textbf{Détection et analyse} : identification des signes d'intrusion ou d'anomalie via les systèmes de surveillance et corrélation des événements de sécurité.
+    \item \textbf{Confinement, éradication et rétablissement} : isolation des systèmes compromis, suppression des causes profondes et restauration des services dans un état de confiance connu.
+    \item \textbf{Activités post-incident} : analyse forensique, capitalisation des leçons apprises et mise à jour des procédures.
+\end{enumerate}
+
+\subsection{Indicateurs clés — TTD et TTR}
+La maturité d'un processus de gestion des incidents se mesure notamment par deux indicateurs : le TTD (Time To Detect) — délai entre l'occurrence d'un incident et sa détection — et le TTR (Time To Respond) — délai entre la détection et la mise en \oe{}uvre de contre-mesures effectives. Des TTD et TTR faibles sont le signe d'une organisation de sécurité mature, dotée d'une surveillance automatisée efficace.
+
+\subsection{Conformité RGPD et notification des violations}
+L'article 33 du RGPD \cite{rgpd} impose une obligation de notification de toute violation de données personnelles à l'autorité de contrôle compétente dans un délai de 72 heures suivant sa découverte. Cette exigence rend incontournable la mise en place de journaux d'audit immuables et de systèmes d'alerte automatisés capables de détecter et qualifier rapidement les incidents.
+
+\section{Supervision Réseau}
+
+\subsection{Définition et enjeux}
+La supervision réseau désigne l'ensemble des pratiques et des outils permettant de surveiller en temps réel l'état, les performances et la sécurité des infrastructures informatiques. Elle constitue le socle opérationnel de la détection des anomalies et des incidents de sécurité. Dans le contexte des architectures microservices, la supervision devient particulièrement complexe en raison de la multiplicité des composants à surveiller \cite{microservices}.
+
+\subsection{Protocoles et technologies de supervision}
+\begin{itemize}
+    \item \textbf{SNMP (Simple Network Management Protocol)} : protocole standardisé permettant la collecte de métriques sur les équipements réseau (routeurs, switches, serveurs). La version 3 (SNMPv3) intègre des mécanismes d'authentification et de chiffrement.
+    \item \textbf{Syslog (RFC 5424)} : protocole de transfert des journaux système vers un collecteur centralisé. Indispensable pour la corrélation d'événements et l'analyse forensique.
+    \item \textbf{NetFlow / IPFIX} : protocoles d'analyse des flux réseau, permettant la détection d'anomalies de trafic (exfiltration de données, scans de ports).
+    \item \textbf{Prometheus + Grafana} : solution open-source de supervision métrique, largement adoptée dans les architectures cloud-native et Docker/Kubernetes \cite{docker}.
+\end{itemize}
+
+\subsection{Supervision dans les architectures conteneurisées}
+Dans une architecture microservices conteneurisée, la supervision s'appuie sur des agents légers déployés à l'intérieur ou en périphérie des conteneurs. L'outil cAdvisor (Container Advisor) de Google permet la collecte des métriques de performance des conteneurs Docker (CPU, mémoire, réseau, I/O). Couplé à Prometheus pour le stockage et Grafana pour la visualisation, il forme la base d'une supervision efficace des environnements Docker \cite{microservices}.
+
+Bien que ces outils de supervision constituent des références pertinentes pour le suivi d'une infrastructure distribuée, ils n'ont pas été déployés dans le cadre du présent stage. Ils sont néanmoins présentés comme des pistes d'évolution intéressantes pour renforcer l'observabilité et la maintenance d'une future version du système.
+
+\section{Intelligence Artificielle Conversationnelle}
+Dans le cadre de ce projet, l'intelligence artificielle est mobilisée au service de l'expérience utilisateur, à travers un chatbot conversationnel et un agent de traduction multilingue intégrés directement à la plateforme web.
+
+\subsection{Traitement du Langage Naturel (NLP)}
+Le Traitement du Langage Naturel (Natural Language Processing, NLP) est la discipline de l'intelligence artificielle qui permet aux machines de comprendre, d'interpréter et de produire du langage humain. Les avancées récentes dans les architectures Transformer \cite{whisper} — notamment les Grands Modèles de Langage (LLM, Large Language Models) — ont rendu possible la construction d'assistants intelligents capables de comprendre le contexte conversationnel, de générer des réponses cohérentes et d'effectuer des tâches complexes telles que la traduction, la synthèse ou la reformulation de contenu.
+
+Dans le contexte d'une plateforme métier, le NLP apporte une réponse directe aux enjeux d'accessibilité, d'efficacité opérationnelle et d'expérience utilisateur. Il réduit la friction entre l'utilisateur et le système en permettant des interactions en langage naturel plutôt que par navigation d'interfaces complexes.
+
+\subsection{Chatbots et assistants intelligents}
+Un chatbot intelligent est un agent logiciel capable d'engager une conversation avec un utilisateur en langage naturel, de maintenir le contexte au fil des échanges, et de fournir des réponses contextuellement pertinentes. Contrairement aux chatbots à base de règles (rule-based), les chatbots fondés sur des LLM génèrent dynamiquement leurs réponses, ce qui leur permet de traiter une grande variété de requêtes sans configuration préalable exhaustive.
+
+Les bénéfices pour une plateforme métier sont significatifs :
+\begin{itemize}
+    \item \textbf{Assistance utilisateur} : réponse instantanée aux questions fréquentes, guidage dans les fonctionnalités et réduction des tickets de support.
+    \item \textbf{Automatisation} : prise en charge des tâches répétitives (recherche d'information, navigation guidée) libérant les opérateurs humains pour les tâches à valeur ajoutée.
+    \item \textbf{Amélioration de l'expérience utilisateur (UX)} : interaction fluide et naturelle réduisant la courbe d'apprentissage de la plateforme.
+    \item \textbf{Disponibilité} : service disponible 24h/24 sans intervention humaine.
+\end{itemize}
+
+\subsection{Agent de traduction multilingue}
+Un agent de traduction est un composant logiciel capable de traduire automatiquement du contenu textuel d'une langue source vers une ou plusieurs langues cibles. Les LLM modernes offrent des performances de traduction compétitives pour les paires de langues courantes, avec l'avantage de pouvoir être déployés localement pour les applications soumises au RGPD \cite{rgpd}.
+
+Dans le contexte d'une plateforme destinée à une audience internationale, la traduction automatique apporte des bénéfices directs :
+\begin{itemize}
+    \item \textbf{Accessibilité multilingue} : l'interface et les contenus peuvent être rendus accessibles dans la langue maternelle de chaque utilisateur sans multiplication des versions.
+    \item \textbf{Communication internationale} : facilite les échanges entre utilisateurs de langues différentes au sein de la même plateforme.
+    \item \textbf{Conformité RGPD} : un déploiement local élimine la transmission de données à des services tiers, conformément aux exigences du Règlement Général sur la Protection des Données.
+\end{itemize}
+
+\section{SOC et SIEM — Perspectives de sécurité opérationnelle}
+
+\textbf{Note préliminaire} : Les technologies SOC et SIEM présentées dans cette section n'ont pas été déployées dans le cadre du présent projet. Elles ont été étudiées dans une démarche de veille technologique et sont présentées comme des perspectives d'évolution sérieuses pour une version future de la plateforme.
+
+\subsection{Security Operations Center (SOC)}
+Un SOC (Security Operations Center) est une unité organisationnelle centralisée dédiée à la surveillance continue, à la détection et à la réponse aux incidents de sécurité. Il opère 24h/24 en traitant les alertes provenant des pare-feux, IDS/IPS, SIEM et journaux système pour qualifier, prioriser et coordonner la réponse aux incidents. L'évolution récente des SOC va vers une automatisation croissante via les plateformes SOAR (Security Orchestration, Automation and Response), intégrant l'IA pour réduire le TTD et concentrer les analystes sur les menaces à haute valeur ajoutée \cite{nist}.
+
+Dans le contexte du présent projet, un SOC constituerait une évolution pertinente pour assurer la surveillance continue de la plateforme événementielle en production, notamment pour la corrélation des journaux d'authentification et la détection des abus de l'API chatbot.
+
+\subsection{SIEM — Security Information and Event Management}
+Un SIEM agrège, normalise et corrèle les journaux d'événements de l'ensemble des composants du système d'information, remplissant deux fonctions complémentaires : la gestion des informations de sécurité (SIM) et la gestion des événements en temps réel (SEM) \cite{nist}.
+
+Le tableau \ref{tab:siem} présente une synthèse comparative des principales solutions disponibles, dans une logique de veille technologique orientée vers la perspective d'évolution de la plateforme.
+
+\begin{longtable}{|m{4cm}|m{6cm}|m{3cm}|}
+\hline
+\textbf{Solution} & \textbf{Caractéristiques principales} & \textbf{Licence} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Splunk & Maturité industrielle, richesse des connecteurs, haute volumétrie & Propriétaire \\
+\hline
+IBM QRadar & Corrélation avancée, intégration écosystème IBM Security & Propriétaire \\
+\hline
+Elastic SIEM (ELK) & Flexibilité, scalabilité, large communauté open-source & Open-source \\
+\hline
+Wazuh & HIDS + SIEM, RGPD-friendly, léger, adapté aux PME & Open-source \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Comparatif des solutions SIEM — veille technologique}
+\label{tab:siem}
+\end{longtable}
+
+Parmi ces solutions, Wazuh apparaît comme la perspective d'évolution la plus adaptée : open-source, RGPD natif, léger et cohérent avec les contraintes d'une infrastructure académique. Son intégration future permettrait de centraliser les journaux d'authentification JWT, les alertes de rate limiting et les accès RBAC dans un tableau de bord unifié.
+
+\section*{Conclusion}
+Cet état de l'art a permis de dresser un panorama ciblé des domaines qui fondent directement les choix techniques du projet. Les concepts de la triade CIA, la modélisation des menaces par STRIDE, les protocoles TLS 1.3 pour les communications sécurisées, les architectures de chatbot IA basées sur les LLM et les agents de traduction multilingues, ainsi que les exigences du RGPD pour la protection des données personnelles constituent le socle théorique sur lequel repose l'architecture développée.
+
+L'intelligence artificielle conversationnelle — chatbots contextuels et agents de traduction — se confirme comme le vecteur d'innovation principal de la plateforme, apportant une valeur ajoutée directe à l'expérience utilisateur tout en restant parfaitement compatible avec les exigences de souveraineté des données du RGPD grâce au déploiement local.
+
+La supervision réseau avancée ainsi que les architectures SOC et SIEM ont été présentées comme des références de l'état de l'art et des perspectives d'évolution sérieuses, mais ne font pas partie du périmètre de réalisation du présent stage. Cette distinction garantit la cohérence et la crédibilité de l'analyse au regard du travail effectivement réalisé.
+
+Le chapitre suivant traduit ces connaissances en spécifications concrètes, en définissant les besoins fonctionnels et non fonctionnels du système et en justifiant les choix technologiques retenus à la lumière des comparatifs présentés ici.

@@ -1,0 +1,267 @@
+\chapter{Conception de l'Architecture}
+
+\section*{Introduction}
+Le chapitre précédent a permis d'établir un référentiel complet des besoins du système, à travers l'identification des acteurs, la spécification des cas d'utilisation et la définition des exigences non fonctionnelles en matière de sécurité, de performance et de conformité réglementaire. Fort de ce socle analytique, le présent chapitre expose les choix architecturaux retenus pour répondre à ces exigences et décrit la structure interne du système à différents niveaux d'abstraction. La section 4.2 présente l'architecture globale en couches et justifie les technologies retenues. La section 4.3 détaille la modélisation des composants logiciels au travers des diagrammes de classes et de séquence. La section 4.4 approfondit les mécanismes de sécurité intégrés à la conception. Enfin, la section 4.5 décrit l'architecture de déploiement, depuis la conteneurisation jusqu'au pipeline d'intégration et de déploiement continus.
+
+\section{Architecture Globale du Système}
+
+\subsection{Vue en couches}
+La conception d'un système de visioconférence sécurisé intégrant des services d'intelligence artificielle en temps réel nécessite une organisation architecturale rigoureuse, capable de séparer les responsabilités tout en garantissant la fluidité des échanges entre composants. L'architecture retenue pour ce projet repose sur un modèle en sept couches distinctes, chacune encapsulant un ensemble cohérent de fonctionnalités et d'interactions. Ce découpage en couches favorise la maintenabilité, la testabilité indépendante de chaque niveau et la scalabilité horizontale ciblée des composants les plus sollicités.
+
+La \textbf{première couche}, dite Couche Client, constitue le point d'entrée de tout utilisateur dans le système : elle expose l'interface web frontend à travers laquelle organisateurs et participants accèdent à la plateforme depuis un navigateur standard, sans installation logicielle préalable. La \textbf{deuxième couche}, dite Couche Accès \& Sécurité, forme le bouclier périmétrique du système : elle regroupe le répartiteur de charge (Load Balancer), le mandataire inverse (Reverse Proxy), le pare-feu applicatif web (WAF) et le sous-système d'authentification multi-facteurs (MFA) basé sur le protocole OAuth 2.0 ; aucune requête ne peut atteindre les couches internes sans avoir été filtrée et authentifiée à ce niveau. La \textbf{troisième couche}, dite Couche Traitement IA, héberge les deux services d'intelligence artificielle : le chatbot conversationnel fondé sur un Large Language Model (LLM), qui assiste les utilisateurs en langage naturel depuis toutes les pages de la plateforme, et l'agent de traduction multilingue déployé localement pour garantir la confidentialité des données conformément au RGPD. La \textbf{quatrième couche}, dite Couche Communication Temps Réel, gère la signalisation et le routage des flux multimédias : le Video Bridge agrège les flux vidéo des participants, Jicofo assure la gestion des conférences via le protocole XMPP, et Prosody joue le rôle de serveur de signalisation. La \textbf{cinquième couche}, dite Couche Application, orchestre la logique métier : l'Odoo Backend API gère les événements, les utilisateurs et les données organisationnelles, tandis que le Meeting Management Service coordonne le cycle de vie des sessions. La \textbf{sixième couche}, dite Couche Infrastructure, assure la fondation opérationnelle du système : l'ensemble des services est conteneurisé via Docker, déployé sur l'infrastructure cloud OVHcloud, et soumis à un pipeline CI/CD automatisé couplé à un système de supervision et de journalisation (Monitoring \& Logging). Enfin, la \textbf{septième couche}, dite Couche Données, gère la persistance et la protection des informations : la base de données relationnelle et le stockage sécurisé des fichiers sont protégés par les contrôles de sécurité transversaux — RBAC, TLS et journaux d'audit — qui s'appliquent à l'ensemble de la pile.
+
+\subsection{Justification des choix architecturaux}
+Chaque technologie retenue dans cette architecture a fait l'objet d'une évaluation comparative tenant compte des critères de sécurité, de conformité réglementaire, de maturité de l'écosystème et d'adéquation aux contraintes spécifiques du projet. Le tableau \ref{tab:choix_techno} synthétise les principaux choix technologiques et leur justification.
+
+\begin{longtable}{|m{3cm}|m{3.5cm}|m{6.5cm}|}
+\hline
+\textbf{Composant} & \textbf{Technologie retenue} & \textbf{Justification} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Conteneurisation & Docker & Portabilité entre environnements, isolation des services, déploiements reproductibles et rollback facilité. \\
+\hline
+Infrastructure Cloud & OVHcloud & Souveraineté européenne des données, conformité RGPD garantie contractuellement, datacenter localisé en France. \\
+\hline
+Gestion ERP & Odoo & Solution open-source, architecture modulaire, API REST native et communauté active facilitant les intégrations. \\
+\hline
+Chatbot IA & LLM (API NLP) & Compréhension contextuelle du langage naturel, génération de réponses pertinentes, intégration native dans l'interface web. \\
+\hline
+Agent de traduction & LLM local & Traduction multilingue précise, déploiement local garantissant la conformité RGPD, indépendance des API tierces. \\
+\hline
+Chiffrement réseau & TLS 1.3 & Version la plus récente du protocole, réduction de la latence de négociation (0-RTT), suppression des algorithmes obsolètes. \\
+\hline
+Authentification & MFA + JWT & Double facteur d'authentification associé à des tokens stateless signés, réduisant la surface d'attaque sur les sessions. \\
+\hline
+Contrôle d'accès & RBAC & Modèle éprouvé permettant une granularité fine des permissions selon le profil de chaque utilisateur. \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Justification des choix technologiques}
+\label{tab:choix_techno}
+\end{longtable}
+
+L'ensemble de ces choix technologiques forme un écosystème cohérent dans lequel chaque composant joue un rôle précis et complémentaire. La priorité accordée aux solutions open-source — Whisper, Odoo, Docker — réduit la dépendance à des éditeurs propriétaires et garantit la transparence du code, un critère particulièrement important en contexte de cybersécurité. Par ailleurs, l'adoption de standards ouverts tels que WebRTC, TLS 1.3 et JWT assure l'interopérabilité du système avec l'écosystème web existant, tout en bénéficiant de la rigueur des processus de standardisation internationaux.
+
+\textbf{Infrastructure Cloud — OVHcloud vs. AWS/Azure/GCP.} Bien que les géants Amazon Web Services, Microsoft Azure et Google Cloud Platform offrent des services plus étendus, OVHcloud a été privilégié pour des raisons stratégiques déterminantes. Sa politique de souveraineté des données et son implantation exclusivement européenne (datacenters en France) répondent directement aux exigences du RGPD \cite{rgpd}, un critère non fonctionnel critique. Son modèle de tarification prédictible, sans frais excessifs de sortie de données (egress fees), permet une meilleure maîtrise des coûts d'infrastructure à mesure que la plateforme monte en charge.
+
+\textbf{Conteneurisation — Docker vs. Kubernetes.} Docker Compose a été retenu pour la phase initiale de développement et de déploiement pour sa simplicité de configuration et sa faible courbe d'apprentissage, offrant un rapport performance/complexité optimal pour un système à l'échelle d'un PFE. Kubernetes, bien que l'orchestrateur de référence pour les architectures à grande échelle \cite{docker}, introduit une complexité opérationnelle significative qui dépasse les besoins actuels. Une migration vers Kubernetes est néanmoins envisagée comme perspective d'évolution pour une montée en charge de la plateforme en production.
+
+\textbf{Authentification sécurisée — MFA et JWT.} L'algorithme RS256 utilisé pour la signature des tokens JWT offre un équilibre optimal entre sécurité cryptographique asymétrique et performance computationnelle. Couplé au double facteur TOTP, il constitue une défense robuste contre les compromissions de comptes, alignée avec les recommandations du NIST \cite{nist}.
+
+\section{Modélisation Détaillée des Composants}
+
+\subsection{Diagramme de classes}
+Le diagramme de classes constitue l'outil central de la modélisation orientée objet. Il représente la structure statique du système en identifiant les entités logicielles — appelées classes — leurs attributs, leurs opérations et les relations qui les unissent. Dans le cadre d'une architecture en microservices telle que celle adoptée pour ce projet, le diagramme de classes permet de formaliser les contrats d'interface entre les différents services, de clarifier les responsabilités de chaque composant et de guider l'implémentation de manière cohérente et maintenable.
+
+Le système est modélisé par neuf classes principales dont les interactions reflètent le flux de données décrit dans les cas d'utilisation du chapitre précédent. La classe \texttt{User} est l'entité centrale autour de laquelle s'organisent toutes les interactions : elle est associée à \texttt{AuthService}, qui gère les mécanismes d'authentification et de vérification MFA, et à \texttt{SecurityManager}, qui assure de manière transversale le chiffrement des données, les vérifications d'autorisation et la journalisation des activités. La classe \texttt{Frontend} orchestre l'interface utilisateur et entretient des associations directes avec \texttt{OdooBackend} — pour la gestion des événements et des utilisateurs — , \texttt{STTService} — pour la transcription audio — et \texttt{JitsiBridge} — pour la gestion des flux multimédias. La classe \texttt{STTService} est elle-même liée par association à \texttt{TranslationService}, formant ainsi le pipeline IA de transcription-traduction. Enfin, la classe \texttt{Meeting} est composée au sein de \texttt{OdooBackend}, traduisant le fait que le cycle de vie d'un événement est intégralement géré par le module ERP.
+
+Le tableau \ref{tab:classes} détaille les responsabilités et les méthodes principales de chacune des neuf classes du système.
+
+\begin{longtable}{|m{3.5cm}|m{5.5cm}|m{4cm}|}
+\hline
+\textbf{Classe} & \textbf{Responsabilité} & \textbf{Méthodes principales} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+AuthService & Gestion de l'authentification des utilisateurs & \texttt{login()}, \texttt{verifyMFA()} \\
+\hline
+User & Entité utilisateur centrale du système & \texttt{authenticate()}, \texttt{joinMeeting()} \\
+\hline
+Frontend & Interface utilisateur et orchestration des flux & \texttt{startSession()}, \texttt{captureAudio()}, \texttt{displaySubtitles()} \\
+\hline
+SecurityManager & Sécurité transversale (chiffrement, accès, audit) & \texttt{encrypt()}, \texttt{authorize()}, \texttt{logActivity()} \\
+\hline
+OdooBackend & Intégration ERP et persistance des événements & \texttt{createMeeting()}, \texttt{manageUsers()}, \texttt{storeData()} \\
+\hline
+STTService & Transcription automatique du flux audio & \texttt{transcribe(audio)} \\
+\hline
+TranslationService & Traduction multilingue du texte transcrit & \texttt{translate(text)} \\
+\hline
+JitsiBridge & Gestion et routage des flux vidéo WebRTC & \texttt{handleStream()} \\
+\hline
+Meeting & Entité représentant un événement en ligne & \texttt{start()}, \texttt{end()} \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Description des classes du système}
+\label{tab:classes}
+\end{longtable}
+
+\subsection{Diagramme de séquence}
+Le diagramme de séquence modélise le comportement dynamique du système en représentant les interactions entre acteurs et composants dans l'ordre chronologique de leur exécution. Le scénario retenu correspond au flux nominal complet d'une interaction utilisateur avec le chatbot IA : depuis la connexion initiale jusqu'à l'obtention d'une réponse contextuelle. Ce scénario implique cinq entités — l'utilisateur (User), le Frontend, le Load Balancer / Reverse Proxy, le service d'authentification (Auth Service) et le service chatbot (Chatbot Service / LLM) — et se déroule en trois phases distinctes.
+
+La \textbf{Phase 1} (étapes 1 à 4) couvre l'authentification sécurisée : l'utilisateur soumet ses identifiants au Frontend, qui les transmet via HTTPS au Load Balancer. Celui-ci route la requête vers l'Auth Service, qui vérifie le mot de passe (bcrypt) puis le second facteur d'authentification (TOTP RFC 6238) ; un token JWT RS256 valide 15 minutes est généré et renvoyé au Frontend.
+
+La \textbf{Phase 2} (étapes 5 à 8) couvre l'envoi d'un message et la validation sécurisée : l'utilisateur saisit sa question dans le widget chatbot ; le Frontend envoie la requête POST \texttt{/api/chat/message} avec le token JWT en en-tête. Le middleware du Chatbot Service vérifie la signature JWT, extrait le rôle RBAC, sanitise l'entrée (filtrage XSS, rate limiting) et construit le prompt enrichi avec l'historique conversationnel et le contexte utilisateur.
+
+La \textbf{Phase 3} (étapes 9 à 11) couvre la génération et l'affichage de la réponse : le Chatbot Service appelle le moteur LLM avec le prompt enrichi ; le LLM génère une réponse contextuelle et pertinente ; la réponse JSON est retournée au Frontend, qui l'affiche dans le fil de conversation avec horodatage et rendu Markdown. L'ensemble des communications inter-services est protégé par TLS 1.3.
+
+Le flux en onze étapes est détaillé ci-après :
+\begin{enumerate}
+    \item \textbf{Connexion utilisateur} : l'utilisateur soumet ses identifiants depuis le Frontend.
+    \item \textbf{Requête HTTPS} : le Frontend transmet la requête au Load Balancer via TLS 1.3.
+    \item \textbf{Authentification MFA} : l'Auth Service vérifie le mot de passe (bcrypt) puis le code TOTP (second facteur).
+    \item \textbf{Émission du token JWT} : le token RS256 (15 min) est retourné au Frontend et stocké en session.
+    \item \textbf{Saisie du message chatbot} : l'utilisateur entre sa question dans le widget intégré à la plateforme.
+    \item \textbf{Envoi POST /api/chat/message} : le Frontend transmet le message avec le token JWT en en-tête Authorization: Bearer.
+    \item \textbf{Validation JWT et sanitisation} : le middleware vérifie la signature, extrait le rôle RBAC, sanitise l'entrée et applique le rate limiting.
+    \item \textbf{Construction du prompt enrichi} : le service injecte l'historique des N derniers tours et le contexte utilisateur dans le prompt système LLM.
+    \item \textbf{Appel du moteur LLM} : le Chatbot Service soumet le prompt au modèle de langage.
+    \item \textbf{Génération de la réponse} : le LLM génère une réponse contextuelle et la retourne au service en JSON.
+    \item \textbf{Affichage dans l'interface} : le Frontend affiche la réponse dans le fil de conversation avec rendu Markdown et horodatage.
+\end{enumerate}
+
+\section{Architecture de Sécurité}
+Chaque mécanisme de sécurité retenu dans l'architecture répond à une menace ou à un besoin identifié lors de l'analyse du système. Cette approche permet d'assurer une cohérence entre l'expression des exigences, la conception technique et la validation du projet. Le tableau \ref{tab:stride} présente la correspondance entre les principales menaces modélisées et les contremesures architecturales qui leur sont associées.
+
+\begin{longtable}{|m{3.5cm}|m{3.5cm}|m{6cm}|}
+\hline
+\textbf{Catégorie STRIDE} & \textbf{Menace visée} & \textbf{Mesure de protection retenue} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Spoofing (Usurpation) & Usurpation d'identité, faux utilisateur & Authentification MFA (TOTP RFC 6238) + JWT signé RS256 \\
+\hline
+Tampering (Altération) & Modification des données en transit & TLS 1.3 (RFC 8446), SRTP, hachage SHA-256 \\
+\hline
+Repudiation & Déni d'une action effectuée & Journaux d'audit immuables + horodatage systématique \\
+\hline
+Information Disclosure (Divulgation) & Interception des flux, fuite de données & Chiffrement AES-256 au repos, TLS 1.3 en transit \\
+\hline
+Denial of Service (DoS) & Saturation du service, indisponibilité & WAF, Load Balancer, architecture microservices résiliente \\
+\hline
+Elevation of Privilege & Accès non autorisé à des ressources restreintes & RBAC à cinq niveaux + validation systématique des tokens JWT \\
+\hline
+Non-conformité RGPD & Traitement illicite de données personnelles & RGPD by Design (art. 5, 15, 17, 20, 25), droit à l'oubli \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Correspondance menaces / mesures de protection (modèle STRIDE)}
+\label{tab:stride}
+\end{longtable}
+
+\subsection{Chiffrement des communications}
+L'ensemble du trafic applicatif entre les clients et les serveurs est chiffré à l'aide du protocole TLS 1.3 (Transport Layer Security, version 1.3). Cette version, standardisée par l'IETF en 2018 via la RFC 8446, représente une évolution majeure par rapport à ses prédécesseurs : elle supprime les suites cryptographiques obsolètes (RC4, SHA-1, DES), réduit le délai de négociation à un seul aller-retour réseau (1-RTT handshake) et introduit la reprise de session à latence nulle (0-RTT) pour les connexions répétées. L'intégration de TLS 1.3 au niveau du Reverse Proxy Nginx garantit que toute communication entre le navigateur de l'utilisateur et la plateforme est protégée contre les écoutes passives et les attaques par interposition (man-in-the-middle).
+
+Le protocole SRTP (Secure Real-time Transport Protocol) complète TLS 1.3 pour la protection des flux audio et vidéo en temps réel acheminés via WebRTC. Contrairement à TLS, qui est conçu pour les flux TCP orientés connexion, SRTP opère au-dessus d'UDP et est spécifiquement optimisé pour les contraintes des communications multimédias en temps réel : faible surcoût cryptographique, tolérance aux pertes de paquets et faible latence de chiffrement. SRTP assure la confidentialité, l'intégrité et la protection contre le rejeu des flux multimédias. Ces deux protocoles sont donc complémentaires et non redondants : TLS 1.3 protège la signalisation et les échanges applicatifs (authentification, transcription, traduction), tandis que SRTP protège les flux multimédias temps réel qui empruntent des canaux UDP distincts.
+
+\subsection{Authentification multi-facteurs (MFA)}
+L'authentification multi-facteurs constitue l'un des mécanismes de protection les plus efficaces contre les attaques par compromission de credentials. Le flux MFA implémenté dans la plateforme se déroule en deux étapes séquentielles et obligatoires. La première étape repose sur la vérification des identifiants classiques : l'utilisateur saisit son adresse électronique et son mot de passe, lesquels sont transmis de manière chiffrée à l'Auth Service. Si les identifiants sont valides, la deuxième étape est déclenchée : l'utilisateur reçoit un code OTP (One-Time Password) à usage unique, généré selon le standard TOTP (RFC 6238) et valable pendant une fenêtre temporelle de trente secondes. À l'issue de la validation de ce second facteur, l'Auth Service émet un token JWT (JSON Web Token) signé cryptographiquement à l'aide de l'algorithme RS256. Ce token a une durée de validité configurable — typiquement quinze minutes pour le token d'accès — et est accompagné d'un refresh token de longue durée permettant de renouveler la session sans réauthentification complète.
+
+\subsection{Contrôle d'accès basé sur les rôles (RBAC)}
+Le modèle de contrôle d'accès basé sur les rôles (Role-Based Access Control, RBAC) est implémenté de manière transversale dans l'ensemble de la plateforme. Cinq rôles distincts ont été définis, correspondant aux acteurs identifiés lors de la phase d'analyse. Le tableau \ref{tab:rbac} présente les permissions accordées et les ressources accessibles pour chacun de ces rôles.
+
+\begin{longtable}{|m{2.5cm}|m{5.5cm}|m{5cm}|}
+\hline
+\textbf{Rôle} & \textbf{Permissions accordées} & \textbf{Ressources accessibles} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Participant & Lecture, participation aux sessions & Sessions en cours, sous-titres, historique personnel \\
+\hline
+Organisateur & Lecture, écriture, gestion de session & Événements, listes de participants, enregistrements \\
+\hline
+Administrateur & Accès total en lecture et écriture & Système complet, journaux d'audit, paramètres de configuration \\
+\hline
+Agent IA & Lecture des flux audio, écriture des transcriptions & Flux temps réel entrants, stockage des transcriptions \\
+\hline
+Odoo ERP & Synchronisation en lecture et écriture & Données des événements et comptes utilisateurs \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Matrice des rôles et permissions (RBAC)}
+\label{tab:rbac}
+\end{longtable}
+
+L'application du modèle RBAC est guidée par le principe du moindre privilège (principle of least privilege) : chaque entité — humaine ou systémique — ne se voit accorder que les permissions strictement nécessaires à l'accomplissement de ses fonctions.
+
+\subsection{Conformité RGPD dans la conception}
+La conformité au Règlement Général sur la Protection des Données (RGPD) est intégrée dès la phase de conception, selon l'approche Privacy by Design préconisée par l'article 25 du règlement. Sur le plan des mesures techniques, les données personnelles stockées en base de données font l'objet d'un chiffrement au repos (encryption at rest) à l'aide de l'algorithme AES-256, tandis que les identifiants directs (noms, adresses électroniques) sont soumis à une pseudonymisation dans les journaux d'audit et les exports de données analytiques. Des durées de rétention définies et automatisées sont appliquées à chaque catégorie de données : les enregistrements vidéo sont supprimés au bout de quatre-vingt-dix jours par défaut, les transcriptions sont conservées trente jours, et les journaux d'accès sont archivés pour une durée d'un an conformément aux recommandations de la CNIL.
+
+\subsection{Analyse des menaces — Modèle STRIDE}
+Une analyse des menaces basée sur le modèle STRIDE \cite{stride} a été menée pour identifier et mitiger les risques potentiels à chaque niveau de l'architecture :
+\begin{itemize}
+    \item \textbf{Usurpation d'identité (Spoofing)} : mitigée par l'authentification multi-facteurs (MFA) et l'utilisation de JWT signés RS256 pour la gestion des sessions.
+    \item \textbf{Altération des données (Tampering)} : prévenue par le chiffrement des communications (TLS 1.3/SRTP) et les mécanismes de contrôle d'intégrité des tokens (signatures HMAC).
+    \item \textbf{Répudiation (Repudiation)} : couverte par les journaux d'audit horodatés et immuables stockés dans Odoo, permettant de retracer l'ensemble des actions effectuées sur la plateforme.
+    \item \textbf{Divulgation d'informations (Information Disclosure)} : adressée par le chiffrement AES-256 des données au repos, le protocole SRTP pour les flux multimédias, et la pseudonymisation des emails dans les journaux système.
+    \item \textbf{Déni de service (Denial of Service)} : atténué par le rate limiting configuré au niveau du reverse proxy Nginx, la durée limitée des tokens JWT et l'architecture Docker facilitant la scalabilité horizontale.
+    \item \textbf{Élévation de privilèges (Elevation of Privilege)} : bloquée par le RBAC à trois niveaux granulaires et l'application systématique du principe du moindre privilège à chaque composant.
+\end{itemize}
+
+\subsection{Principes de Sécurité par Conception}
+Les principes de Sécurité par Conception (Security by Design) ont été intégrés dès les premières phases du projet \cite{nist} :
+\begin{itemize}
+    \item \textbf{Moindre Privilège} : chaque service et utilisateur dispose uniquement des permissions minimales nécessaires à l'exécution de ses fonctions. L'Agent IA ne peut accéder ni aux données personnelles ni aux paramètres système.
+    \item \textbf{Défense en Profondeur} : plusieurs couches de sécurité complémentaires sont mises en \oe{}uvre, de la protection réseau (pare-feu, Nginx WAF) à la sécurité applicative (validation des entrées, gestion des sessions JWT, RBAC).
+    \item \textbf{Séparation des Préoccupations} : les modules de sécurité sont isolés des modules fonctionnels via la conteneurisation Docker, limitant l'impact d'une éventuelle faille à un périmètre restreint.
+    \item \textbf{Fail-Safe Defaults} : le système est configuré pour refuser par défaut tout accès non explicitement autorisé ; en cas d'erreur de décodage ou d'expiration d'un token JWT, l'accès aux ressources protégées est immédiatement révoqué.
+\end{itemize}
+
+\subsection{Tests de Sécurité}
+La validation de l'efficacité des mécanismes de sécurité implémentés repose sur trois niveaux de tests complémentaires :
+\begin{itemize}
+    \item \textbf{Tests d'intrusion (Penetration Testing)} : des scénarios d'attaque simulés — injection SQL, XSS, CSRF, accès non autorisé aux salles Jitsi — ont été conduits avec l'outil OWASP ZAP pour scanner l'application web et identifier les vulnérabilités exploitables.
+    \item \textbf{Analyse de vulnérabilités} : des scans réguliers de l'infrastructure et des dépendances logicielles ont été effectués pour détecter les failles connues (CVE) dans les images Docker utilisées.
+    \item \textbf{Analyse de code statique (SAST)} : l'outil Flake8 (Python) et ESLint (JavaScript) ont analysé le code source pour identifier les vulnérabilités potentielles avant l'exécution, avec blocage du pipeline CI/CD en cas de violation.
+\end{itemize}
+
+\subsection{Conformité RGPD — Articles adressés}
+La plateforme a été conçue en stricte conformité avec le RGPD \cite{rgpd}. Les articles clés adressés par l'implémentation sont les suivants :
+\begin{itemize}
+    \item \textbf{Article 5} (Principes relatifs au traitement) : respect des principes de minimisation des données, limitation de la finalité, intégrité et confidentialité par chiffrement AES-256 au repos.
+    \item \textbf{Article 15} (Droit d'accès) : la route \texttt{/api/healthcare/rgpd/export} retourne l'intégralité des données personnelles de l'inscrit en format JSON structuré.
+    \item \textbf{Article 17} (Droit à l'effacement) : la route \texttt{/api/healthcare/rgpd/delete} supprime en cascade tous les enregistrements associés à un utilisateur, avec effet immédiat.
+    \item \textbf{Article 20} (Portabilité des données) : export JSON des données dans un format structuré, lisible par machine.
+    \item \textbf{Article 25} (Protection dès la conception) : approche Privacy by Design appliquée dès la phase d'architecture, avec pseudonymisation dans les logs et consentement explicite obligatoire à l'inscription.
+\end{itemize}
+
+\section{Architecture de Déploiement}
+
+\subsection{Conteneurisation avec Docker}
+L'architecture de déploiement adoptée repose sur le paradigme des microservices conteneurisés via Docker. Chaque composant fonctionnel du système est encapsulé dans un conteneur autonome, partageant le noyau du système d'exploitation hôte mais disposant de son propre espace de fichiers, de ses variables d'environnement et de ses interfaces réseau isolées. Cette approche offre plusieurs avantages décisifs : la portabilité entre environnements (développement, recette, production), la reproductibilité garantie des déploiements grâce à l'immuabilité des images Docker, l'isolation des pannes entre services et la scalabilité indépendante de chaque composant. Le tableau \ref{tab:docker} présente la liste des services Docker déployés, avec leur image de base, leur rôle et leur port d'exposition.
+
+\begin{longtable}{|m{3.5cm}|m{3.5cm}|m{4.5cm}|m{1cm}|}
+\hline
+\textbf{Service} & \textbf{Image de base} & \textbf{Rôle} & \textbf{Port} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+frontend-service & node:18-alpine & Interface web utilisateur (Frontend) & 3000 \\
+\hline
+auth-service & python:3.11-slim & Authentification MFA et génération de tokens JWT & 8001 \\
+\hline
+video-service & ubuntu:22.04 & Service de visioconférence (Video Bridge, Jicofo, Prosody) & 8443 \\
+\hline
+stt-service & python:3.11-slim & Transcription audio via Whisper (Speech-to-Text) & 8002 \\
+\hline
+translation-service & python:3.11-slim & Traduction multilingue via LLM & 8003 \\
+\hline
+odoo-service & odoo:16 & Progiciel ERP Odoo — gestion des événements et utilisateurs & 8069 \\
+\hline
+db-service & postgres:15 & Base de données relationnelle PostgreSQL & 5432 \\
+\hline
+nginx-proxy & nginx:alpine & Mandataire inverse avec terminaison TLS 1.3 & 443 \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Services Docker du système}
+\label{tab:docker}
+\end{longtable}
+
+\subsection{Infrastructure OVHcloud}
+Le choix de OVHcloud comme fournisseur d'infrastructure cloud a été motivé par plusieurs critères convergents. En premier lieu, la \textbf{souveraineté européenne des données} : OVHcloud opère des datacenters localisés en France (Roubaix, Strasbourg, Gravelines), garantissant que les données personnelles des utilisateurs ne quittent pas le territoire de l'Union Européenne, en pleine conformité avec les exigences de l'article 46 du RGPD. En second lieu, la \textbf{tarification prévisible} d'OVHcloud, sans frais de sortie de données excessifs (egress fees), permet de maîtriser les coûts d'exploitation à mesure que la plateforme monte en charge. La configuration d'infrastructure retenue consiste en une instance de type VPS haute performance, équipée d'un minimum de 8 Go de RAM, 4 vCPUs et 100 Go de stockage SSD NVMe, avec une bande passante réseau de 1 Gbit/s garantie.
+
+\subsection{Pipeline CI/CD}
+L'automatisation du cycle de livraison logicielle est assurée par un pipeline d'intégration et de déploiement continus (CI/CD) implémenté avec GitHub Actions. Ce pipeline est déclenché automatiquement à chaque push sur la branche principale du dépôt et s'exécute en quatre étapes séquentielles. La première étape, \textbf{Build}, compile le code source et construit les images Docker pour chaque microservice. La deuxième étape, \textbf{Tests}, exécute la suite de tests automatisés — tests unitaires et tests d'intégration — et bloque le pipeline en cas d'échec. La troisième étape, \textbf{Push}, publie les images validées dans un registre Docker privé. La quatrième et dernière étape, \textbf{Déploiement}, déploie automatiquement les nouvelles images sur l'infrastructure OVHcloud via SSH sécurisé et redémarre les conteneurs concernés via docker-compose.
+
+\section*{Conclusion}
+Ce chapitre a présenté l'architecture complète du système, en articulant les choix de conception autour de trois axes complémentaires. Sur le plan structural, l'architecture en sept couches permet une séparation claire des responsabilités, depuis la couche client jusqu'à la couche données, et favorise la scalabilité et la maintenabilité à long terme. Sur le plan de la modélisation logicielle, les neuf classes du diagramme UML formalisent les contrats d'interface entre microservices, tandis que le diagramme de séquence en onze étapes décrit avec précision le flux nominal d'une session, de l'authentification MFA jusqu'à l'affichage des réponses du chatbot. Sur le plan sécuritaire et opérationnel, les mécanismes de chiffrement (TLS 1.3 et SRTP), d'authentification MFA, de contrôle d'accès RBAC et de conformité RGPD forment une défense en profondeur cohérente, répondant point par point aux exigences non fonctionnelles définies au chapitre précédent.
+
+La cohérence entre les spécifications de l'analyse des besoins et les décisions architecturales exposées dans ce chapitre garantit que le système conçu répond effectivement aux attentes fonctionnelles et aux contraintes de sécurité identifiées. Le chapitre suivant sera consacré à l'implémentation concrète de cette architecture : il décrira les étapes de développement des services, les configurations de sécurité appliquées et les procédures de déploiement sur l'infrastructure OVHcloud.

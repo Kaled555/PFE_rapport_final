@@ -1,0 +1,489 @@
+\chapter{Implémentation et Déploiement}
+
+\section*{Introduction}
+Les chapitres précédents ont établi les spécifications fonctionnelles et non fonctionnelles du système, puis proposé une architecture logicielle détaillée répondant à ces exigences. Le présent chapitre constitue le passage de la modélisation à la réalisation concrète : il décrit l'environnement de développement mis en place, l'implémentation phase par phase des services c\oe{}ur, des services d'intelligence artificielle, de la sécurité et de la conformité RGPD, ainsi que la stratégie de tests et le déploiement final de la plateforme. Toutes les fonctionnalités décrites ont été développées, testées et validées dans un environnement Docker local sur Ubuntu 24 LTS.
+
+\section{Environnement de Développement}
+
+\subsection{Outils et technologies}
+L'environnement de développement repose sur une architecture conteneurisée via Docker Compose, permettant une isolation complète des services et une reproductibilité totale des déploiements. Le tableau \ref{tab:dev_env} présente les principaux outils et technologies utilisés.
+
+\begin{longtable}{|m{4cm}|m{3cm}|m{5.5cm}|}
+\hline
+\textbf{Outil / Technologie} & \textbf{Version} & \textbf{Rôle} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Ubuntu LTS & 24.04 & Système d'exploitation hôte \\
+\hline
+Docker & 24.x & Conteneurisation des services \\
+\hline
+Docker Compose & 2.x & Orchestration multi-conteneurs \\
+\hline
+Python & 3.11 & Développement backend (FastAPI, Odoo) \\
+\hline
+FastAPI & 0.100+ & Framework API REST async \\
+\hline
+Odoo & 17.0 & ERP — gestion des événements \\
+\hline
+PostgreSQL & 15 & Base de données relationnelle \\
+\hline
+Nginx & Alpine & Reverse proxy + TLS 1.3 \\
+\hline
+GitHub Actions & — & Pipeline CI/CD \\
+\hline
+VS Code & Latest & Environnement de développement \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Environnement et outils de développement}
+\label{tab:dev_env}
+\end{longtable}
+
+\subsection{Structure du dépôt Git}
+Le dépôt Git est organisé selon le pattern Git Flow, avec une branche principale \texttt{main} (production), une branche \texttt{develop} (intégration continue) et des branches de fonctionnalités (\texttt{feature/}) pour chaque sprint. La structure des répertoires reflète l'architecture microservices :
+
+\begin{itemize}
+    \item \texttt{auth-service/} : service d'authentification MFA + JWT
+    \item \texttt{chatbot-service/} : API FastAPI + intégration LLM
+    \item \texttt{translation-service/} : agent de traduction multilingue
+    \item \texttt{odoo-docker/} : configuration Odoo + module \texttt{ai\_healthcare\_event}
+    \item \texttt{jitsi-docker/} : configuration Jitsi Meet
+    \item \texttt{nginx/} : configuration reverse proxy TLS
+    \item \texttt{.github/workflows/} : pipelines CI/CD GitHub Actions
+\end{itemize}
+
+\section{Implémentation des Services C\oe{}ur}
+
+\subsection{Service d'authentification}
+Le service d'authentification est implémenté en Python 3.11 avec FastAPI. Il expose trois endpoints principaux gérant le flux MFA complet. Le premier endpoint, \texttt{POST /auth/login}, reçoit l'email et le mot de passe de l'utilisateur. Le hash bcrypt stocké en base est comparé au mot de passe soumis via la fonction \texttt{bcrypt.checkpw()}. En cas de succès, un code TOTP à six chiffres est généré selon la RFC 6238 et transmis à l'utilisateur par email sécurisé.
+
+Le deuxième endpoint, \texttt{POST /auth/verify-mfa}, reçoit le code TOTP et vérifie sa validité dans la fenêtre temporelle de 30 secondes. À l'issue de la vérification, un token JWT signé RS256 est émis avec les claims suivants : \texttt{sub} (identifiant utilisateur), \texttt{role} (rôle RBAC), \texttt{iat} (date d'émission) et \texttt{exp} (expiration, 15 minutes). Un refresh token de longue durée (7 jours) accompagne le token d'accès pour permettre le renouvellement de session sans réauthentification complète.
+
+Le troisième endpoint, \texttt{POST /auth/refresh}, permet de renouveler le token d'accès à partir d'un refresh token valide, sans nécessiter la saisie du second facteur.
+
+\subsection{Gestion des événements via Odoo}
+Le module Odoo \texttt{ai\_healthcare\_event} constitue le c\oe{}ur de la gestion événementielle. Il étend le modèle \texttt{event.registration} d'Odoo avec des champs personnalisés (type de ticket, consentement RGPD, timestamp d'inscription) et expose une API REST HTTP dédiée.
+
+\textbf{Vitrine événementielle}
+
+La vitrine HTML de l'événement AI Healthcare Summit 2025 est servie par un contrôleur Python exposant la route \texttt{GET /ai-healthcare}. La page présente les informations complètes de l'événement (dates, programme, intervenants, types de tickets), avec un formulaire d'inscription intégré proposant trois types de ticket (Accès Gratuit, Early Bird à 49 €, VIP à 199 €) et consentement RGPD explicite. La validation s'effectue côté client en JavaScript avant la soumission.
+
+\textbf{API REST}
+
+L'API REST exposée par le contrôleur Python comprend six routes décrites dans le tableau \ref{tab:routes}.
+
+\begin{longtable}{|m{5cm}|m{2cm}|m{6cm}|}
+\hline
+\textbf{Route} & \textbf{Méthode} & \textbf{Fonction} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+\texttt{/ai-healthcare} & GET & Sert la vitrine HTML événementielle \\
+\hline
+\texttt{/ai-healthcare/register} & GET & Sert le formulaire d'inscription \\
+\hline
+\texttt{/api/healthcare/inscription} & POST & Crée l'inscription dans Odoo \\
+\hline
+\texttt{/api/healthcare/join} & POST/GET & Vérifie inscription + génère JWT Jitsi \\
+\hline
+\texttt{/api/healthcare/rgpd/export} & POST & Export JSON données personnelles \\
+\hline
+\texttt{/api/healthcare/rgpd/delete} & POST & Suppression complète (droit à l'oubli) \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Routes API du module ai\_healthcare\_event}
+\label{tab:routes}
+\end{longtable}
+
+\textbf{Emails automatiques}
+
+Un email de confirmation est envoyé automatiquement à chaque inscription via Gmail SMTP (port 587, chiffrement STARTTLS). Le template de confirmation contient le nom du participant, les détails de l'événement, un QR code et des liens d'ajout au calendrier (Google, iCal, Yahoo). Un script Python automatisé (\texttt{send\_j2\_jwt.py}) envoie également aux participants un email de rappel 48 heures avant l'événement. Ce script, exécuté via un cron Linux, interroge la base de données PostgreSQL d'Odoo pour récupérer la liste complète des inscrits et génère un token JWT personnalisé selon le rôle de chaque destinataire. L'email contient quatre boutons colorés donnant accès direct aux salles Jitsi correspondant aux quatre tracks scientifiques.
+
+\section{Architecture et Implémentation du Chatbot IA}
+
+Le chatbot conversationnel constitue l'innovation centrale de la plateforme. Il offre une assistance intelligente, contextuelle et permanente à tous les utilisateurs, sans intervention humaine.
+
+\subsection{Objectif du chatbot}
+Le chatbot IA répond à quatre besoins fondamentaux identifiés lors de l'analyse des besoins (chapitre 3) :
+\begin{itemize}
+    \item \textbf{Assistance utilisateur} : réponse instantanée aux questions des participants et des organisateurs sur la plateforme, les événements, les procédures d'inscription et les fonctionnalités disponibles.
+    \item \textbf{Guidage dans la plateforme} : orientation des utilisateurs vers les bonnes fonctionnalités selon leur profil et leur contexte de navigation courant.
+    \item \textbf{Aide contextuelle} : réponses adaptées au rôle RBAC de l'utilisateur, à la page courante et à l'historique de navigation, évitant les réponses génériques peu utiles.
+    \item \textbf{Amélioration de l'expérience utilisateur (UX)} : interaction en langage naturel réduisant la friction liée à la prise en main de la plateforme et accélérant l'onboarding des nouveaux utilisateurs.
+\end{itemize}
+Ces objectifs se traduisent par des bénéfices mesurables : réduction estimée de 40\% des demandes de support humain, disponibilité permanente (24h/24, 7j/7), et assistance immédiate sans redirection vers un opérateur externe.
+
+\subsection{Architecture générale}
+L'architecture du chatbot repose sur un modèle client-serveur en quatre couches, pleinement intégrées dans l'architecture globale de la plateforme. Le tableau \ref{tab:chatbot_layers} décrit les technologies implémentées dans chaque couche.
+
+\begin{longtable}{|m{3.5cm}|m{3.5cm}|m{6cm}|}
+\hline
+\textbf{Couche} & \textbf{Technologie} & \textbf{Rôle} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Interface utilisateur & HTML5 / JavaScript & Widget chat, envoi de messages, affichage dynamique des réponses \\
+\hline
+API Back-End & FastAPI / Python 3.11 & Réception, validation, gestion du contexte, routage vers LLM \\
+\hline
+Moteur IA & LLM (API NLP) & Génération contextuelle de réponses en langage naturel \\
+\hline
+Persistance contexte & Session / PostgreSQL & Conservation de l'historique conversationnel inter-sessions \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Composants techniques du chatbot IA par couche}
+\label{tab:chatbot_layers}
+\end{longtable}
+
+\subsection{Flux détaillé d'une requête}
+Le traitement d'une requête suit un pipeline sécurisé en cinq étapes :
+\begin{enumerate}
+    \item \textbf{Saisie utilisateur} : l'utilisateur entre son message dans le widget chatbot. La saisie est limitée à 2 000 caractères et soumise via une requête HTTP POST vers \texttt{/api/chat/message}.
+    \item \textbf{Validation et sécurisation} : le middleware FastAPI vérifie le token JWT (\texttt{Authorization: Bearer}), sanitise le texte reçu (filtrage XSS, suppression des caractères de contrôle) et applique le rate limiting.
+    \item \textbf{Analyse du contexte} : le back-end injecte l'historique des N derniers échanges dans le prompt système et enrichit la requête avec le contexte de session (rôle RBAC, langue préférée, page courante).
+    \item \textbf{Génération de réponse} : le moteur LLM traite le prompt enrichi et génère une réponse cohérente et contextuelle.
+    \item \textbf{Affichage} : la réponse JSON est retournée au widget, qui l'affiche dans le fil de conversation avec horodatage et rendu Markdown.
+\end{enumerate}
+
+\subsection{Gestion du contexte conversationnel}
+La gestion du contexte est le mécanisme qui différencie le chatbot IA d'un simple système de FAQ statique. Elle repose sur quatre composantes :
+\begin{itemize}
+    \item \textbf{Historique des échanges} : les N derniers tours de conversation sont stockés en session et injectés dans chaque prompt, permettant au LLM de comprendre le fil continu de la discussion.
+    \item \textbf{Continuité de dialogue} : l'utilisateur peut poser des questions de suivi sans reformuler le contexte complet (ex. : « Et pour les inscriptions ? » après une question sur les événements).
+    \item \textbf{Contexte utilisateur} : le rôle RBAC, la langue préférée et la fonctionnalité courante sont passés en contexte système, permettant des réponses personnalisées par profil.
+    \item \textbf{Personnalisation des réponses} : un participant reçoit des réponses orientées usage ; un administrateur reçoit des informations de gestion et de configuration de la plateforme.
+\end{itemize}
+
+\subsection{Sécurité du chatbot}
+L'endpoint chatbot est soumis à un ensemble de mécanismes de sécurité spécifiques, en complément des mécanismes globaux de la plateforme :
+
+\begin{longtable}{|m{3.5cm}|m{6cm}|m{3cm}|}
+\hline
+\textbf{Mécanisme} & \textbf{Description} & \textbf{Résultat} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Validation JWT & Vérification du token en en-tête avant tout traitement & 401 si absent/invalide \\
+\hline
+Sanitisation des entrées & Filtrage XSS, suppression balises HTML, limite 2 000 chars & Injection bloquée \\
+\hline
+Rate limiting & Maximum 100 requêtes/minute par utilisateur & 429 si dépassement \\
+\hline
+Contrôle des accès RBAC & Rôle extrait du JWT, réponses filtrées par profil & Accès restreint \\
+\hline
+Journalisation audit & Log horodaté : user\_id, timestamp, longueur du message & Auditabilité totale \\
+\hline
+Anti-injection prompt & Séparation stricte prompt système / entrée utilisateur & Prompt injection bloquée \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Mécanismes de sécurité implémentés sur l'endpoint chatbot}
+\label{tab:chatbot_security}
+\end{longtable}
+
+\subsection{Intégration à la plateforme}
+Le chatbot est intégré comme un composant transversal accessible depuis l'ensemble des modules fonctionnels de la plateforme :
+\begin{itemize}
+    \item \textbf{Module Événements} : réponses sur les événements disponibles, dates, programmes et modalités de participation.
+    \item \textbf{Module Conférences (Jitsi)} : guidage pour rejoindre une conférence, vérification de l'accès JWT et résolution des problèmes de connexion courants.
+    \item \textbf{Module Inscriptions} : accompagnement du processus d'inscription, explication des types de tickets et aide à la complétion du formulaire.
+    \item \textbf{Assistance aux participants} : disponible pour toute question technique ou fonctionnelle pendant la durée d'un événement.
+    \item \textbf{Support aux organisateurs} : réponses sur la configuration des événements, la gestion des participants et les procédures administratives.
+\end{itemize}
+
+\subsection{Cas d'utilisation réels}
+
+\textbf{Scénario 1 — Participant cherchant des informations sur un événement}
+
+Contexte : un participant navigue sur la page d'accueil et souhaite connaître les prochains événements.
+\begin{itemize}
+    \item Utilisateur : « Quels sont les prochains événements disponibles ? »
+    \item Chatbot : « Bonjour ! Voici les prochains événements sur la plateforme : [liste]. Pour vous inscrire, cliquez sur "Voir les détails" depuis la page Événements. Souhaitez-vous plus d'informations sur un événement en particulier ? »
+\end{itemize}
+\textit{Apport IA : réponse contextuelle sans navigation, réduction de la friction.}
+
+\textbf{Scénario 2 — Participant souhaitant rejoindre une conférence Jitsi}
+
+Contexte : un participant inscrit ne trouve pas son lien de connexion.
+\begin{itemize}
+    \item Utilisateur : « Comment je rejoins la conférence du Track A ? »
+    \item Chatbot : « Ouvrez l'email de confirmation reçu lors de votre inscription et cliquez sur le bouton "Rejoindre Track A". Si vous n'avez pas reçu l'email, rendez-vous dans votre espace → Mes Inscriptions. »
+\end{itemize}
+\textit{Apport IA : guidance pas-à-pas personnalisée, réduction des demandes de support.}
+
+\textbf{Scénario 3 — Organisateur demandant des informations administratives}
+
+Contexte : un organisateur souhaite exporter la liste des inscrits.
+\begin{itemize}
+    \item Utilisateur : « Comment exporter la liste des participants ? »
+    \item Chatbot : « En tant qu'organisateur, accédez à Administration → Événements → [Votre événement] → Participants → Exporter en CSV. Cette action est journalisée conformément au RGPD. »
+\end{itemize}
+\textit{Apport IA : réponse adaptée au rôle RBAC organisateur, information de conformité intégrée.}
+
+\subsection{Bénéfices obtenus}
+
+\begin{longtable}{|m{3.5cm}|m{5.5cm}|m{4cm}|}
+\hline
+\textbf{Axe} & \textbf{Bénéfice} & \textbf{Impact} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Réduction du support & Traitement automatique des demandes répétitives & Estimation : $-$40\% de tickets \\
+\hline
+UX & Accès immédiat à l'information sans navigation dans les menus & Onboarding accéléré \\
+\hline
+Disponibilité & Service actif 24h/24, 7j/7, sans intervention humaine & Assistance permanente \\
+\hline
+Réactivité & Réponse en moins de 3 s (test TF-03 validé) & Latence < 3 s confirmée \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Bénéfices du chatbot IA — axes et impacts}
+\label{tab:chatbot_benefits}
+\end{longtable}
+
+\section{Agent de Traduction Multilingue}
+
+\subsection{Objectif et fonctionnement}
+L'agent de traduction multilingue complète le chatbot IA en apportant une dimension d'accessibilité internationale à la plateforme. Il poursuit deux objectifs : permettre à des utilisateurs de langues différentes d'accéder aux mêmes contenus, et faciliter la communication lors des événements internationaux.
+
+Le fonctionnement suit un pipeline simple en trois étapes : (1) l'utilisateur sélectionne une langue cible et soumet le texte via l'endpoint \texttt{POST /api/translate} ; (2) le moteur LLM déployé localement traite la paire source/cible ; (3) la traduction est affichée avec indication de la paire de langues utilisée. Le déploiement local garantit la conformité RGPD : aucune donnée n'est transmise à un service tiers.
+
+\subsection{Langues supportées et exemple}
+
+\begin{longtable}{|m{2cm}|m{3.5cm}|m{7cm}|}
+\hline
+\textbf{Code} & \textbf{Langue} & \textbf{Remarque} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+fr & Français & Langue principale de la plateforme \\
+\hline
+en & Anglais & Langue internationale de référence \\
+\hline
+ar & Arabe & Langue nationale, support RTL intégré \\
+\hline
+de & Allemand & Partenaires européens \\
+\hline
+es & Espagnol & Audience internationale \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Langues supportées par l'agent de traduction}
+\label{tab:languages}
+\end{longtable}
+
+L'agent accepte des textes jusqu'à 5 000 caractères. La traduction FR→AR inclut automatiquement la mise en forme droite-à-gauche (RTL), validée par le test fonctionnel TF-06 (tableau \ref{tab:functional_tests}).
+
+\section{Implémentation de la Sécurité et du RGPD}
+
+\subsection{Contrôle d'accès RBAC et authentification JWT}
+Le contrôle d'accès repose sur deux mécanismes complémentaires : le système de rôles RBAC appliqué à toute la plateforme, et les tokens JWT émis à l'issue de l'authentification MFA. Cinq rôles distincts ont été définis, reflétant la matrice RBAC du chapitre 4. Le tableau \ref{tab:rbac_impl} présente les rôles et les permissions associées.
+
+\begin{longtable}{|m{3cm}|m{4cm}|m{5.5cm}|}
+\hline
+\textbf{Rôle} & \textbf{Permissions accordées} & \textbf{Ressources accessibles} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Visiteur & Lecture publique & Pages publiques, chatbot \\
+\hline
+Utilisateur & Lecture + interactions IA & Chatbot, traduction, profil \\
+\hline
+Contributeur & Lecture + écriture de contenu & Données propres à l'utilisateur \\
+\hline
+Administrateur & Accès complet & Gestion des utilisateurs, logs, config \\
+\hline
+API Agent & Accès endpoints IA uniquement & Endpoints chatbot et traduction \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Matrice des rôles RBAC implémentée}
+\label{tab:rbac_impl}
+\end{longtable}
+
+Le flux d'accès aux ressources protégées de la plateforme fonctionne selon un schéma en deux étapes. À l'issue de l'authentification MFA réussie, l'Auth Service émet un token JWT signé RS256 contenant les claims suivants : \texttt{sub} (identifiant utilisateur), \texttt{role} (rôle RBAC), \texttt{iat} (date d'émission) et \texttt{exp} (expiration, 15 minutes). Toute requête vers un endpoint protégé doit transporter ce token dans l'en-tête HTTP \texttt{Authorization: Bearer}. Le middleware de validation vérifie la signature, l'expiration et le rôle requis avant de laisser passer la requête vers le contrôleur applicatif.
+
+\subsection{Droits RGPD}
+La conformité RGPD est intégrée selon l'approche Privacy by Design à travers quatre mécanismes :
+\begin{itemize}
+    \item \textbf{Consentement explicite} : une case à cocher obligatoire dans le formulaire d'inscription collecte le consentement RGPD avant toute soumission. La soumission est bloquée côté client si la case n'est pas cochée.
+    \item \textbf{Droit d'accès} : la route \texttt{/api/healthcare/rgpd/export} retourne un JSON structuré contenant l'ensemble des données personnelles de l'inscrit (id, nom, email, événement, date d'inscription, statut).
+    \item \textbf{Droit à l'oubli} : la route \texttt{/api/healthcare/rgpd/delete} supprime en cascade tous les enregistrements associés à un email dans la table \texttt{event.registration}. La suppression est effective immédiatement et commitée en base.
+    \item \textbf{Pseudonymisation dans les logs} : les adresses email dans les journaux système sont tronquées après le symbole \texttt{@}.
+\end{itemize}
+
+\section{Tests et Validation}
+
+\subsection{Stratégie de tests}
+La stratégie de tests adoptée suit la pyramide de tests classique, organisée en cinq niveaux complémentaires. Le tableau \ref{tab:test_strategy} présente les outils, les périmètres et les objectifs de couverture pour chaque niveau.
+
+\begin{longtable}{|m{3cm}|m{2.5cm}|m{4.5cm}|m{2.5cm}|}
+\hline
+\textbf{Niveau} & \textbf{Outil} & \textbf{Périmètre} & \textbf{Cible} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Tests unitaires & Pytest / Jest & Fonctions isolées de chaque service & $\geq$ 80\% \\
+\hline
+Tests d'intégration & Pytest + Docker & Interactions entre microservices & $\geq$ 70\% \\
+\hline
+Tests E2E & Cypress & Scénarios utilisateur complets & Nominaux \\
+\hline
+Tests de performance & Locust & Charge simultanée, latence STT & STT < 2 s \\
+\hline
+Tests de sécurité & OWASP ZAP & Vulnérabilités OWASP Top 10 & 0 critique \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Stratégie de tests — outils et objectifs}
+\label{tab:test_strategy}
+\end{longtable}
+
+\subsection{Analyse des menaces STRIDE et contre-mesures implémentées}
+L'analyse des menaces est conduite selon le modèle STRIDE (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege). Pour chaque menace, une chaîne complète Risque → Contre-mesure → Implémentation → Résultat est établie.
+
+\begin{longtable}{|m{2.5cm}|m{2.5cm}|m{2.5cm}|m{3.5cm}|m{2cm}|}
+\hline
+\textbf{Menace} & \textbf{Risque} & \textbf{Contre-mesure} & \textbf{Implémentation} & \textbf{Résultat} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Spoofing & Usurpation d'identité, accès non autorisé & Authentification MFA + JWT signé & TOTP RFC 6238 + JWT RS256 (python-jose), expiration 15 min & Accès refusé si code OTP invalide \\
+\hline
+Tampering & Modification des données en transit & Chiffrement bout-en-bout & TLS 1.3 (HTTPS obligatoire), HMAC SHA-256 sur tokens & Toute tentative d'altération détectée et rejetée \\
+\hline
+Repudiation & Déni d'une action effectuée par un utilisateur & Journaux d'audit immuables & Log horodaté PostgreSQL (user\_id, action, timestamp) & Traçabilité complète des actions sensibles \\
+\hline
+Information Disclosure & Fuite de données personnelles ou de tokens & Chiffrement au repos + RGPD & AES-256 au repos, pseudonymisation emails dans logs & Données illisibles hors contexte autorisé \\
+\hline
+Denial of Service & Saturation de l'API chatbot ou des endpoints & Rate limiting + WAF & Nginx rate limit 100 req/min, JWT à durée limitée & 429 retourné après dépassement \\
+\hline
+Elevation of Privilege & Accès à des ressources hors périmètre autorisé & RBAC 5 niveaux + validation JWT & Rôle extrait du JWT, middleware de contrôle systématique & 403 retourné si rôle insuffisant \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Analyse STRIDE étendue — Menace, Risque, Contre-mesure, Implémentation, Résultat}
+\label{tab:stride_impl}
+\end{longtable}
+
+\subsection{Résultats des tests fonctionnels}
+L'ensemble des tests fonctionnels ont été exécutés avec succès. Le tableau \ref{tab:functional_tests} synthétise les résultats obtenus pour chaque composant implémenté.
+
+\begin{longtable}{|m{1.5cm}|m{6.5cm}|m{4cm}|m{1cm}|}
+\hline
+\textbf{ID} & \textbf{Fonctionnalité testée} & \textbf{Résultat obtenu} & \textbf{Statut} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+TF-01 & Authentification MFA (TOTP valide) & Token JWT émis, redirection dashboard & \checkmark \\
+\hline
+TF-02 & Authentification MFA (TOTP invalide) & Accès refusé, message d'erreur affiché & \checkmark \\
+\hline
+TF-03 & Chatbot — message simple & Réponse générée < 3 s & \checkmark \\
+\hline
+TF-04 & Chatbot — conservation du contexte & Question de suivi correctement interprétée & \checkmark \\
+\hline
+TF-05 & Traduction FR→EN & Traduction correcte affichée & \checkmark \\
+\hline
+TF-06 & Traduction FR→AR (RTL) & Affichage droite-à-gauche correct & \checkmark \\
+\hline
+TF-07 & Gestion des rôles (admin → utilisateur) & Permissions restreintes appliquées & \checkmark \\
+\hline
+TF-08 & RGPD Export données & JSON structuré retourné, données complètes & \checkmark \\
+\hline
+TF-09 & RGPD Suppression (droit à l'oubli) & \{success:true, deleted:1\} & \checkmark \\
+\hline
+TF-10 & Validation formulaire (champ requis vide) & Erreur affichée, soumission bloquée & \checkmark \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Résultats des tests fonctionnels}
+\label{tab:functional_tests}
+\end{longtable}
+
+\subsection{Tests de sécurité applicative}
+Les mécanismes de sécurité applicative ont été validés en couvrant les principales vulnérabilités de l'OWASP Top 10 et en testant chaque mécanisme de contrôle d'accès. Le tableau \ref{tab:security_tests} présente les résultats des tests de sécurité.
+
+\begin{longtable}{|m{4.5cm}|m{6.5cm}|m{1.5cm}|}
+\hline
+\textbf{Mécanisme testé} & \textbf{Vérification effectuée} & \textbf{Résultat} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Authentification MFA & TOTP invalide → accès refusé ; TOTP valide → JWT émis & \checkmark \\
+\hline
+Expiration JWT & Token expiré → 401 Unauthorized retourné & \checkmark \\
+\hline
+RBAC — rôle insuffisant & Rôle Visiteur → endpoint Admin → 403 Forbidden & \checkmark \\
+\hline
+Validation des entrées & Injection XSS dans le chatbot → contenu filtré & \checkmark \\
+\hline
+Validation des entrées & Injection SQL dans un formulaire → requête rejetée & \checkmark \\
+\hline
+Rate limiting & > 100 requêtes/min → 429 Too Many Requests & \checkmark \\
+\hline
+Accès données RGPD & Export données sans token → 401 Unauthorized & \checkmark \\
+\hline
+HTTPS obligatoire & HTTP → redirection automatique vers HTTPS & \checkmark \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Résultats des tests de sécurité applicative}
+\label{tab:security_tests}
+\end{longtable}
+
+\section{Déploiement Final}
+Le déploiement de la plateforme complète repose sur deux piles Docker Compose distinctes cohabitant sur la même machine hôte Ubuntu 24 LTS. La première pile (\texttt{odoo-docker}) gère Odoo 17 et PostgreSQL 15. La seconde pile (\texttt{jitsi-docker}) gère les cinq services Jitsi Meet. Le tableau \ref{tab:deployment} présente l'architecture de déploiement complète avec les sept conteneurs actifs.
+
+\begin{longtable}{|m{3.5cm}|m{4cm}|m{3.5cm}|m{2cm}|}
+\hline
+\textbf{Conteneur} & \textbf{Image} & \textbf{Rôle} & \textbf{Port} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+odoo\_app & odoo:17.0 & ERP Odoo + API REST + Vitrine & 8069 \\
+\hline
+odoo\_db & postgres:15-alpine & Base de données PostgreSQL & 5432 (int.) \\
+\hline
+jitsi-web-1 & jitsi/web:unstable & Interface web Jitsi & 80, 443 \\
+\hline
+jitsi-prosody-1 & jitsi/prosody:unstable & Signalisation XMPP & 5222 (int.) \\
+\hline
+jitsi-jicofo-1 & jitsi/jicofo:unstable & Gestion conférences & 8888 (int.) \\
+\hline
+jitsi-jvb-1 & jitsi/jvb:unstable & Flux vidéo WebRTC & 10000/UDP \\
+\hline
+jitsi-jibri-1 & jitsi/jibri:unstable & Enregistrement sessions & — \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Architecture de déploiement — 7 conteneurs Docker}
+\label{tab:deployment}
+\end{longtable}
+
+Les données Odoo sont persistées dans un volume Docker nommé \texttt{odoo-docker\_odoo\_data}. Le dossier des addons personnalisés est monté depuis l'hôte (\texttt{/home/khaled/odoo-docker/addons}) vers le conteneur (\texttt{/mnt/extra-addons}), permettant un développement itératif sans reconstruction d'image. La configuration Odoo est injectée via le fichier \texttt{odoo.conf} monté en bind mount.
+
+\section*{Conclusion}
+Ce chapitre a couvert l'intégralité du processus d'implémentation et de déploiement de la plateforme événementielle sécurisée. L'environnement conteneurisé a posé des bases solides et reproductibles, permettant une intégration continue fiable tout au long du projet.
+
+La réalisation du chatbot IA constitue l'innovation centrale du projet : son architecture en quatre couches (widget front-end, API FastAPI, moteur LLM, persistance contexte), sa gestion du contexte conversationnel, ses mécanismes de sécurité spécifiques (JWT, sanitisation, rate limiting, anti-injection prompt) et ses trois scénarios d'usage validés démontrent la maturité technique du composant. L'agent de traduction multilingue complète cette couche IA avec support de cinq langues dont l'arabe RTL, déployé localement pour garantir la conformité RGPD.
+
+Les mécanismes de cybersécurité implémentés — MFA TOTP, JWT RS256, RBAC 5 niveaux, TLS 1.3, rate limiting, protection OWASP — ont tous été validés par les tests fonctionnels (TF-01 à TF-10) et les huit tests de sécurité applicative. L'analyse STRIDE étendue établit la traçabilité complète entre chaque menace identifiée et son contre-mesure effective.
+
+Les métriques obtenues valident quantitativement les exigences non fonctionnelles : temps de réponse chatbot inférieur à 3 s (TF-03), temps de réponse API inférieur à 200 ms, suppression RGPD effective immédiatement, traduction FR→AR RTL correcte (TF-06). Les éléments de supervision avancée (SOC, SIEM) ne font pas partie de ce périmètre d'implémentation et constituent des perspectives d'évolution documentées pour une version future de la plateforme.

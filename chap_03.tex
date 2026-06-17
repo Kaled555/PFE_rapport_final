@@ -1,0 +1,408 @@
+\chapter{Spécification des Besoins}
+
+\section*{Introduction}
+Ce chapitre formalise l'ensemble des exigences du système à partir des objectifs définis au chapitre 1 et des concepts identifiés dans l'état de l'art. Il identifie les acteurs, spécifie les besoins fonctionnels au travers de diagrammes de cas d'utilisation UML, définit les exigences non fonctionnelles, et présente les études comparatives qui ont guidé les choix technologiques du projet.
+
+Les exigences présentées ci-après traduisent les besoins métier identifiés pour la plateforme événementielle, tout en intégrant les contraintes de sécurité, de conformité et d'expérience utilisateur propres au contexte du projet. Pour chaque exigence, le lien avec une fonctionnalité concrète est explicité afin de garantir la traçabilité entre les besoins et l'architecture définie au chapitre suivant.
+
+\section{Identification des Acteurs}
+Le tableau \ref{tab:acteurs} présente les cinq acteurs identifiés, leur nature et leur rôle respectif au sein du système.
+
+\begin{longtable}{|m{3.5cm}|m{2cm}|m{8cm}|}
+\hline
+\textbf{Acteur} & \textbf{Type} & \textbf{Rôle dans le système} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Organisateur & Humain & Crée et gère les événements, configure le template dédié, invite les participants et supervise le bon déroulement de la session. \\
+\hline
+Participant & Humain & Rejoint les événements via un lien d'invitation sécurisé, interagit avec les autres participants et consulte les sous-titres générés par l'IA. \\
+\hline
+Administrateur & Humain & Administre l'ensemble de la plateforme : gestion des comptes utilisateurs, configuration système, attribution des rôles, surveillance des journaux d'activité et maintenance. \\
+\hline
+Agent IA (Chatbot / Traduction) & Système & Assiste les utilisateurs via le chatbot conversationnel, effectue la traduction automatique multilingue et fournit des réponses contextuelles en langage naturel. \\
+\hline
+Odoo (ERP) & Système & Synchronise les données relatives aux événements et aux comptes utilisateurs entre la plateforme événementielle et le progiciel de gestion intégré. \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Identification des acteurs du système}
+\label{tab:acteurs}
+\end{longtable}
+
+\section{Spécification des Besoins Fonctionnels}
+La spécification des besoins fonctionnels traduit les attentes des parties prenantes en un ensemble structuré de cas d'utilisation, modélisés selon la notation UML. Cinq diagrammes de cas d'utilisation ont été élaborés, correspondant chacun à un module fonctionnel majeur de la plateforme.
+
+\subsection{Vue d'ensemble du système}
+La vue d'ensemble offre une représentation macroscopique du système, organisant les cas d'utilisation en cinq packages thématiques.
+
+\begin{longtable}{|m{1.5cm}|m{5cm}|m{3cm}|m{2.5cm}|}
+\hline
+\textbf{ID} & \textbf{Nom} & \textbf{Acteur(s)} & \textbf{Type} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+UC\_01 & S'authentifier (MFA) & Tous & Normal \\
+\hline
+UC\_02 & Gérer son profil et ses données & Utilisateur & Normal \\
+\hline
+UC\_03 & Interagir avec le chatbot IA & Utilisateur & Normal \\
+\hline
+UC\_04 & Traduire du contenu & Utilisateur & Normal \\
+\hline
+UC\_05 & Consulter l'assistance IA & Utilisateur & Normal \\
+\hline
+UC\_06 & Gérer les utilisateurs et rôles & Administrateur & Normal \\
+\hline
+UC\_07 & Administrer la plateforme & Administrateur & Normal \\
+\hline
+UC\_08 & Gérer la conformité RGPD & Administrateur & Normal \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Cas d'utilisation — Vue d'ensemble du système}
+\label{tab:uc_overview}
+\end{longtable}
+
+Les cinq packages fonctionnels sont : Authentification \& Sécurité (connexion, MFA, gestion des sessions), Chatbot IA (assistance conversationnelle, NLP, réponses contextuelles), Traduction Multilingue (agent de traduction, sélection de langue, affichage), Administration (gestion des comptes, des rôles, des permissions) et Conformité \& Données (RGPD, consentement, droit à l'oubli).
+
+Le tableau \ref{tab:correspondance} présente la correspondance entre les besoins métier identifiés, les fonctionnalités associées et les solutions techniques retenues.
+
+\begin{longtable}{|m{4cm}|m{4cm}|m{5cm}|}
+\hline
+\textbf{Besoin métier} & \textbf{Fonctionnalité} & \textbf{Solution technique} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Contrôler l'accès à la plateforme & Authentification sécurisée & MFA (TOTP RFC 6238) + JWT RS256 \\
+\hline
+Gérer les droits et permissions & Contrôle d'accès granulaire & RBAC (5 rôles) \\
+\hline
+Assister les utilisateurs en temps réel & Chatbot conversationnel IA & LLM + API NLP \\
+\hline
+Permettre l'accès multilingue & Traduction automatique & Agent LLM local + API de traduction \\
+\hline
+Protéger les données personnelles & Conformité RGPD & Privacy by Design, export/suppression \\
+\hline
+Sécuriser les échanges réseau & Chiffrement des communications & TLS 1.3, AES-256 \\
+\hline
+Valider les données utilisateur & Filtrage et validation des entrées & OWASP, sanitisation, middleware \\
+\hline
+Administrer la plateforme & Dashboard d'administration & Interface admin + API REST \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Correspondance Besoins — Fonctionnalités — Solutions techniques}
+\label{tab:correspondance}
+\end{longtable}
+
+\subsection{Gestion des Événements et Authentification}
+
+\begin{longtable}{|m{1.5cm}|m{5cm}|m{4cm}|m{2cm}|}
+\hline
+\textbf{ID} & \textbf{Nom} & \textbf{Acteur(s)} & \textbf{Type} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+UC\_A01 & S'inscrire & Organisateur, Participant & Normal \\
+\hline
+UC\_A02 & Se connecter & Tous & Normal \\
+\hline
+UC\_A03 & Activer le MFA & Tous & Include \\
+\hline
+UC\_A04 & Réinitialiser le mot de passe & Tous & Normal \\
+\hline
+UC\_A05 & Gérer les comptes & Administrateur & Normal \\
+\hline
+UC\_E01 & Créer un événement & Organisateur & Normal \\
+\hline
+UC\_E02 & Définir la date et l'heure & Organisateur & Include \\
+\hline
+UC\_E03 & Configurer le template & Organisateur & Normal \\
+\hline
+UC\_E04 & Inviter des participants & Organisateur & Normal \\
+\hline
+UC\_E05 & Annuler ou reporter & Organisateur & Extend \\
+\hline
+UC\_O01 & Synchroniser les événements & Odoo (ERP) & Normal \\
+\hline
+UC\_O02 & Synchroniser les comptes & Odoo (ERP) & Normal \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Cas d'utilisation — Gestion des Événements et Authentification}
+\label{tab:uc_events}
+\end{longtable}
+
+\subsection{Déroulement des Réunions Virtuelles}
+
+\begin{longtable}{|m{1.5cm}|m{5cm}|m{4cm}|m{2cm}|}
+\hline
+\textbf{ID} & \textbf{Nom} & \textbf{Acteur(s)} & \textbf{Type} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+UC\_M01 & Rejoindre l'événement & Participant, Organisateur & Normal \\
+\hline
+UC\_M02 & Se connecter & Participant, Organisateur & Include \\
+\hline
+UC\_M03 & Quitter la session & Participant & Normal \\
+\hline
+UC\_M04 & Activer/désactiver caméra & Participant & Normal \\
+\hline
+UC\_M05 & Activer/désactiver micro & Participant & Normal \\
+\hline
+UC\_M06 & Partager l'écran & Participant, Organisateur & Extend \\
+\hline
+UC\_M07 & Utiliser le chat & Participant & Normal \\
+\hline
+UC\_M08 & Enregistrer la session & Organisateur & Extend \\
+\hline
+UC\_M09 & Lever / baisser la main & Participant & Normal \\
+\hline
+UC\_M10 & Accorder / révoquer la parole & Organisateur & Include \\
+\hline
+UC\_M11 & Éjecter un participant & Organisateur & Normal \\
+\hline
+UC\_M12 & Créer des breakout rooms & Organisateur & Extend \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Cas d'utilisation — Déroulement des Réunions Virtuelles}
+\label{tab:uc_meetings}
+\end{longtable}
+
+\subsection{Intelligence Artificielle — Chatbot et Traduction}
+
+\begin{longtable}{|m{1.5cm}|m{6cm}|m{3cm}|m{2cm}|}
+\hline
+\textbf{ID} & \textbf{Nom} & \textbf{Acteur(s)} & \textbf{Type} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+UC\_I01 & Envoyer un message au chatbot & Utilisateur & Normal \\
+\hline
+UC\_I02 & Recevoir une réponse contextuelle & Agent IA & Include \\
+\hline
+UC\_I03 & Maintenir le contexte conversationnel & Agent IA & Include \\
+\hline
+UC\_I04 & Sélectionner la langue cible & Participant & Normal \\
+\hline
+UC\_I05 & Soumettre un texte à traduire & Participant & Normal \\
+\hline
+UC\_I06 & Obtenir la traduction & Agent IA & Include \\
+\hline
+UC\_I07 & Afficher le résultat traduit & Participant & Include \\
+\hline
+UC\_I08 & Consulter l'historique de conversation & Utilisateur & Normal \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Cas d'utilisation — Intelligence Artificielle : Chatbot et Traduction}
+\label{tab:uc_ia}
+\end{longtable}
+
+\subsection{Gestion RGPD et Administration Système}
+
+\begin{longtable}{|m{1.5cm}|m{6cm}|m{3.5cm}|m{2cm}|}
+\hline
+\textbf{ID} & \textbf{Nom} & \textbf{Acteur(s)} & \textbf{Type} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+UC\_R01 & Consulter l'historique des sessions & Participant, Organisateur & Normal \\
+\hline
+UC\_R02 & Consulter les enregistrements & Participant, Organisateur & Normal \\
+\hline
+UC\_R03 & Lire la politique de confidentialité & Tous & Normal \\
+\hline
+UC\_R04 & Gérer les consentements & Participant & Include \\
+\hline
+UC\_R05 & Télécharger ses données personnelles & Participant & Include \\
+\hline
+UC\_R06 & Exercer le droit à l'oubli & Participant & Extend \\
+\hline
+UC\_R07 & Supprimer ses données & Participant & Include \\
+\hline
+UC\_R08 & Auditer les accès & Administrateur & Include \\
+\hline
+UC\_R09 & Chiffrer les données (au repos) & Système & Normal \\
+\hline
+UC\_R10 & Générer un rapport de conformité RGPD & Administrateur & Extend \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Cas d'utilisation — Gestion RGPD et Données Personnelles (UC\_R01 à UC\_R10)}
+\label{tab:uc_rgpd}
+\end{longtable}
+
+\section{Spécification des Besoins Non Fonctionnels}
+Les besoins non fonctionnels définissent les qualités globales que le système doit présenter, indépendamment des fonctionnalités spécifiques qu'il offre.
+
+\begin{longtable}{|m{3cm}|m{6cm}|m{3cm}|}
+\hline
+\textbf{Catégorie} & \textbf{Exigence principale} & \textbf{Niveau attendu} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Sécurité & Chiffrement TLS/SRTP, MFA, RBAC, modèle STRIDE appliqué & Critique \\
+\hline
+Performance & Latence IA < 2 s pour la transcription, 500 participants simultanés & Élevé \\
+\hline
+Disponibilité & Tolérance aux pannes, reprise après incident & 99,9\% \\
+\hline
+Conformité & RGPD art. 5, 15, 17, 20, 25 — droit à l'oubli, consentement explicite & Réglementaire \\
+\hline
+Scalabilité & Architecture microservices, conteneurisation Docker, OVHcloud & Horizontal \\
+\hline
+Accessibilité & Sous-titres multilingues temps réel, compatibilité navigateurs W3C & Standard W3C \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Synthèse des besoins non fonctionnels}
+\label{tab:nfr}
+\end{longtable}
+
+\section{Études Comparatives des Outils Retenus}
+
+\subsection{Plateformes de visioconférence}
+Le tableau \ref{tab:visio} compare les principales solutions de visioconférence selon les critères sécurité, souveraineté des données, personnalisation et compatibilité RGPD.
+
+\begin{longtable}{|m{3.5cm}|m{2.5cm}|m{2.5cm}|m{2.5cm}|m{1.5cm}|}
+\hline
+\textbf{Solution} & \textbf{Chiffrement} & \textbf{Données UE} & \textbf{Personnalisation} & \textbf{RGPD} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Zoom & E2E optionnel & Serveurs USA & Limitée & Partiel \\
+\hline
+Microsoft Teams & TLS / E2E & Azure Europe & Modérée & Oui (DPA) \\
+\hline
+Google Meet & TLS & GCP (mondial) & Faible & Partiel \\
+\hline
+Jitsi Meet & TLS 1.3 + SRTP & Autohébergé & Totale & Oui (local) \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Comparatif des solutions de visioconférence}
+\label{tab:visio}
+\end{longtable}
+
+\textbf{Choix retenu : Jitsi Meet.} Son auto-hébergement garantit la souveraineté totale des données, son chiffrement natif SRTP est optimal pour WebRTC, et sa personnalisation complète permet l'intégration des tokens JWT pour le contrôle d'accès \cite{webrtc}.
+
+\subsection{Progiciels ERP}
+
+\begin{longtable}{|m{4cm}|m{3.5cm}|m{2.5cm}|m{2.5cm}|}
+\hline
+\textbf{Solution} & \textbf{Modules événementiels} & \textbf{API REST} & \textbf{Licence} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+SAP Business One & Oui (module Events) & Oui (OData) & Propriétaire (coûteux) \\
+\hline
+Microsoft Dynamics 365 & Oui (Event Management) & Oui (REST) & Propriétaire (abonnement) \\
+\hline
+Odoo 17 & Oui (modules natifs + custom) & Oui (JSON-RPC, REST) & Open-source (LGPL) \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Comparatif des solutions ERP}
+\label{tab:erp}
+\end{longtable}
+
+\textbf{Choix retenu : Odoo 17.} Son architecture modulaire permet le développement du module personnalisé \texttt{ai\_healthcare\_event} pour gérer le cycle complet des événements (inscriptions, emails JWT, RGPD), sans coût de licence.
+
+\subsection{Solutions de chatbot et d'IA conversationnelle}
+
+\begin{longtable}{|m{3.5cm}|m{3cm}|m{2cm}|m{2cm}|m{2cm}|}
+\hline
+\textbf{Solution} & \textbf{Compréhension contextuelle} & \textbf{Déploiement local} & \textbf{RGPD} & \textbf{Coût} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+ChatGPT API (OpenAI) & Excellente & Non (cloud USA) & Risque transfert données & Payant à l'usage \\
+\hline
+Dialogflow (Google) & Bonne & Non (cloud) & Partiel & Freemium \\
+\hline
+Rasa (open-source) & Bonne (règles + ML) & Oui & Oui & Gratuit (self-hosted) \\
+\hline
+LLM local (API NLP) & Excellente & Oui & Oui (natif) & Gratuit (self-hosted) \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Comparatif des solutions de chatbot / IA conversationnelle}
+\label{tab:chatbot}
+\end{longtable}
+
+\textbf{Choix retenu : LLM déployé localement via API NLP.} Seule solution combinant compréhension contextuelle avancée, déploiement local garantissant la conformité RGPD, et indépendance totale vis-à-vis des API tierces payantes \cite{whisper}.
+
+\subsection{Fournisseurs d'infrastructure cloud}
+
+\begin{longtable}{|m{3cm}|m{3.5cm}|m{3cm}|m{3cm}|}
+\hline
+\textbf{Fournisseur} & \textbf{Localisation données} & \textbf{Conformité RGPD} & \textbf{Coûts} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+AWS & Mondial (USA majoritaire) & Clauses DPA disponibles & Egress fees élevés \\
+\hline
+Microsoft Azure & Europe possible & Certifications multiples & Modèle complexe \\
+\hline
+Google Cloud Platform & Mondial & Clauses DPA disponibles & Egress fees importants \\
+\hline
+OVHcloud & France (Roubaix, Strasbourg) & Natif, DPA contractuel & Prévisible, sans egress fees \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Comparatif des fournisseurs d'infrastructure cloud}
+\label{tab:cloud}
+\end{longtable}
+
+\textbf{Choix retenu : OVHcloud.} Sa souveraineté européenne est un critère décisif pour la conformité RGPD \cite{rgpd}, sa tarification prévisible facilite la maîtrise des coûts et ses datacenters français éliminent toute incertitude sur la localisation des données personnelles.
+
+\section{Justification Globale des Choix Techniques}
+L'ensemble des choix technologiques retenus forme un écosystème cohérent répondant aux cinq axes stratégiques du projet :
+
+\begin{longtable}{|m{3.5cm}|m{3.5cm}|m{6cm}|}
+\hline
+\textbf{Axe} & \textbf{Technologie retenue} & \textbf{Justification principale} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+\hline
+Sécurité des communications & TLS 1.3 + SRTP & Standard IETF, chiffrement 1-RTT, protection flux WebRTC \\
+\hline
+Authentification & MFA (TOTP RFC 6238) + JWT & Résistance au phishing, stateless, standard microservices \\
+\hline
+Visioconférence & Jitsi Meet & Auto-hébergé, SRTP natif, JWT intégré, open-source \\
+\hline
+ERP / Gestion & Odoo 17 & Modules personnalisables, API REST, open-source, RGPD \\
+\hline
+Chatbot IA / Traduction & LLM local (API NLP) & Contextuel, local, RGPD-friendly, indépendant des API tierces \cite{whisper} \\
+\hline
+Conteneurisation & Docker + Docker Compose & Portabilité, isolation, CI/CD, standard industriel \cite{docker} \\
+\hline
+Infrastructure Cloud & OVHcloud & Souveraineté UE, conformité RGPD native, coûts prévisibles \\
+\hline
+Normes de sécurité & NIST CSF 2.0 + STRIDE & Référentiels reconnus pour la sécurité by design \cite{nist}\cite{stride} \\
+\hline
+\captionsetup{justification=centering,margin=2cm}
+\caption{Synthèse de la justification des choix techniques}
+\label{tab:justification}
+\end{longtable}
+
+\section*{Conclusion}
+Ce chapitre a établi la spécification complète du système, depuis l'identification des acteurs jusqu'à la justification des choix technologiques. Les besoins fonctionnels formalisés en cas d'utilisation UML et les six catégories d'exigences non fonctionnelles constituent le contrat de référence pour la conception détaillée présentée au chapitre suivant. Les études comparatives ont démontré la pertinence et la cohérence de l'écosystème technologique retenu — Jitsi, Odoo, LLM local (Chatbot IA), Docker, OVHcloud — au regard des contraintes sécuritaires, réglementaires et de performance du projet. Le chatbot IA, fondé sur un LLM déployé localement, constitue l'innovation principale différenciant la plateforme des solutions concurrentes.
