@@ -1,11 +1,11 @@
-\chapter{Cadre du Projet}
+\chapter{Cadre du Projet et Contexte}
 
 \section*{Introduction}
-Ce premier chapitre pose le cadre général du projet de fin d'études. Il présente l'organisme d'accueil, son secteur d'activité et ses valeurs, avant de contextualiser la problématique à laquelle répond le projet. Les objectifs poursuivis ainsi que la méthodologie de travail adoptée sont ensuite exposés, fournissant la vision stratégique et opérationnelle nécessaire à la bonne compréhension des chapitres techniques qui suivent.
+Ce chapitre présente le cadre général du projet, l'organisme d'accueil, le contexte métier, la problématique identifiée, les objectifs poursuivis et la méthodologie adoptée afin de situer le lecteur avant l'étude technique. Le projet s'inscrit dans une démarche de transformation numérique et de cybersécurisation d'une plateforme événementielle en ligne, répondant à des enjeux réglementaires et opérationnels importants.
 
-\section{Présentation de l'Organisme d'Accueil}
+\section{Organisme d'Accueil}
 
-\subsection{Présentation générale de TEK-UP}
+\subsection{Présentation de l'Entreprise}
 TEK-UP est une université privée tunisienne fondée sur les principes de l'excellence académique, de l'innovation pédagogique et de l'ouverture internationale. Reconnue par le ministère de l'Enseignement Supérieur et de la Recherche Scientifique tunisien, elle accueille plusieurs milliers d'étudiants répartis au sein de ses différentes facultés spécialisées.
 
 TEK-UP se distingue par une approche résolument orientée vers les technologies de l'information et de la communication, avec une offre de formation couvrant les domaines de l'informatique, du génie logiciel, de la cybersécurité, de l'intelligence artificielle, du management des systèmes d'information et des réseaux. Son modèle pédagogique met l'accent sur les projets pratiques, les partenariats avec l'industrie et l'employabilité des diplômés.
@@ -17,7 +17,7 @@ TEK-UP se distingue par une approche résolument orientée vers les technologies
 \label{fig:tekup}
 \end{figure}
 
-\subsection{Secteur d'activité}
+\subsection{Domaine d'Activité}
 TEK-UP opère dans le secteur de l'enseignement supérieur privé et de la formation professionnelle en technologies de l'information. Ses activités principales s'articulent autour de :
 \begin{itemize}
     \item La formation initiale de niveau licence, master et ingénierie dans les filières informatiques et managériales ;
@@ -26,23 +26,18 @@ TEK-UP opère dans le secteur de l'enseignement supérieur privé et de la forma
     \item Le développement de solutions numériques à travers ses laboratoires et ses projets de fin d'études encadrés par des experts du domaine.
 \end{itemize}
 
-\subsection{Mission et valeurs}
-La mission de TEK-UP est de former des ingénieurs et des cadres compétents, éthiques et innovants, capables de répondre aux défis technologiques contemporains et de contribuer au développement économique de la Tunisie. Cette mission se décline autour de quatre valeurs fondamentales :
-\begin{itemize}
-    \item \textbf{Excellence} : exigence académique et qualité des enseignements assurée par un corps professoral qualifié et des programmes régulièrement mis à jour selon les standards internationaux ;
-    \item \textbf{Innovation} : encouragement de la créativité, de l'expérimentation et de l'entrepreneuriat technologique ;
-    \item \textbf{Intégrité} : respect des règles éthiques, académiques et professionnelles dans l'ensemble des activités de l'institution ;
-    \item \textbf{Ouverture} : partenariats avec des universités étrangères, mobilité étudiante et veille technologique internationale.
-\end{itemize}
+La mission de TEK-UP est de former des ingénieurs et des cadres compétents, éthiques et innovants, capables de répondre aux défis technologiques contemporains et de contribuer au développement économique de la Tunisie. Cette mission s'appuie sur quatre valeurs fondamentales : excellence académique, innovation technologique, intégrité éthique et ouverture internationale.
 
-\section{Contexte du Projet}
+\section{Présentation du Projet}
+
+\subsection{Cadre Général}
 Le présent projet de fin d'études s'inscrit dans le contexte de la transformation numérique accélérée des organisations, et plus particulièrement dans celui de l'essor des plateformes événementielles en ligne. Depuis 2020, la généralisation du travail à distance et des interactions virtuelles a profondément modifié les pratiques d'organisation d'événements professionnels et académiques : conférences, webinaires, formations, assemblées générales — autant d'activités désormais réalisées principalement en ligne.
 
 Dans ce contexte, TEK-UP a identifié un besoin stratégique : disposer d'une infrastructure événementielle sécurisée et enrichie par l'intelligence artificielle, permettant d'organiser et d'animer des événements virtuels de grande envergure tout en garantissant la confidentialité des échanges, la conformité réglementaire et l'accessibilité multilingue des contenus.
 
-Ce projet a été réalisé dans le cadre d'un stage de fin d'études de licence en informatique, sous l'encadrement académique de l'encadrante Nour BARRANI. Il constitue à la fois un travail de recherche et développement et une réponse concrète à un besoin opérationnel identifié.
+Ce projet a été réalisé dans le cadre d'un stage de fin d'études, sous l'encadrement académique de Mme Nour BARRANI. Il constitue à la fois un travail de recherche et développement et une réponse concrète à un besoin opérationnel identifié.
 
-\section{Problématique}
+\subsection{Problématique}
 L'organisation d'événements en ligne soulève plusieurs problématiques critiques auxquelles les solutions existantes sur le marché ne répondent que partiellement :
 \begin{itemize}
     \item \textbf{Sécurité des communications} : les plateformes grand public (Zoom, Teams, Meet) ont fait l'objet de nombreuses vulnérabilités documentées — intrusions non autorisées (Zoom-bombing), interception de flux, fuites de données — soulevant des inquiétudes légitimes quant à leur utilisation pour des réunions sensibles.
@@ -53,24 +48,33 @@ L'organisation d'événements en ligne soulève plusieurs problématiques critiq
 
 La problématique centrale de ce projet est donc : \textit{Comment concevoir et implémenter une infrastructure événementielle en ligne qui combine robustesse sécuritaire, conformité réglementaire et intelligence artificielle au service de l'accessibilité ?}
 
-\section{Objectifs du Projet}
-Pour répondre à cette problématique, le projet poursuit quatre objectifs complémentaires :
-\begin{enumerate}
-    \item \textbf{Conception d'une infrastructure de sécurité multicouche} : mettre en \oe{}uvre des mécanismes de protection complets — chiffrement des communications (TLS 1.3, SRTP), authentification multi-facteurs (MFA), contrôle d'accès basé sur les rôles (RBAC) et protection contre les menaces STRIDE — garantissant la confidentialité et l'intégrité des données.
-    \item \textbf{Intégration de l'intelligence artificielle} : déployer le modèle Whisper \cite{whisper} pour la transcription automatique de la parole en temps réel et un service de traduction multilingue basé sur un LLM local, offrant des sous-titres instantanés aux participants.
-    \item \textbf{Conformité réglementaire RGPD} : intégrer dès la conception les principes de Privacy by Design — consentement explicite, droit à l'oubli, portabilité des données, pseudonymisation — conformément aux articles 5, 15, 17, 20 et 25 du RGPD.
-    \item \textbf{Déploiement cloud souverain et scalable} : déployer l'architecture sur infrastructure OVHcloud (datacenters européens), en utilisant Docker pour la conteneurisation et GitHub Actions pour le pipeline CI/CD, assurant une disponibilité de 99,9\%.
-\end{enumerate}
+\subsection{Étude des Solutions Existantes}
+Avant de proposer une architecture personnalisée, une étude comparative des solutions existantes sur le marché a été menée. Les principales solutions évaluées incluent Zoom, Microsoft Teams, Google Meet, Cisco Webex et Jitsi Meet. Cette analyse a révélé que les solutions propriétaires offrent une excellente expérience utilisateur mais présentent des risques de sécurité et de conformité RGPD importants. À l'inverse, les solutions open-source comme Jitsi Meet offrent plus de flexibilité et de souveraineté, mais nécessitent une infrastructure sécurisée et une intégration IA complète.
 
-\section{Méthodologie de Travail — SCRUM}
+\subsection{Limites des Solutions Existantes}
+Les lacunes identifiées sont multiples : absence de chiffrement end-to-end systématique, manque de conformité RGPD par défaut, absence de traduction multilingue en temps réel, absence d'authentification multi-facteurs intégrée, et impossibilité de déployer sur infrastructure nationale ou européenne avec les solutions propriétaires. Ces limites justifient la conception d'une solution spécifiquement adaptée aux enjeux de TEK-UP.
 
-\subsection{Choix de la méthodologie agile}
-La gestion de ce projet repose sur la méthodologie agile SCRUM, particulièrement adaptée aux projets de développement logiciel de complexité élevée, aux exigences évolutives et aux délais contraints. SCRUM favorise une livraison incrémentale de valeur, une adaptation continue aux retours des parties prenantes et une transparence maximale sur l'avancement du projet \cite{microservices}.
+\subsection{Solution Proposée}
+Le projet propose une architecture orientée microservices, déployée sur infrastructure cloud OVHcloud (datacenters européens), intégrant :
+\begin{itemize}
+    \item Un système d'authentification sécurisé avec MFA et gestion des sessions JWT ;
+    \item Des mécanismes de chiffrement end-to-end (TLS 1.3, SRTP) ;
+    \item Un contrôle d'accès basé sur les rôles (RBAC) ;
+    \item L'intégration du modèle Whisper pour transcription et traduction temps réel ;
+    \item Une plateforme de visioconférence Jitsi Meet intégrée ;
+    \item La conformité RGPD dès la conception (Privacy by Design) ;
+    \item Une intégration ERP Odoo pour la gestion des événements et des comptes utilisateurs.
+\end{itemize}
 
-Par opposition aux approches en cascade (waterfall), SCRUM permet de détecter et corriger rapidement les écarts par rapport aux objectifs, réduisant ainsi le risque d'un produit final inadapté aux besoins réels.
+\section{Approche et Méthodologie de Gestion de Projet}
 
-\subsection{Organisation en sprints}
-Le projet a été organisé en quatre sprints successifs de deux à trois semaines chacun, couvrant l'ensemble du cycle de vie du développement :
+\subsection{Comparaison des Méthodologies Agiles}
+Avant de sélectionner la méthodologie de gestion de projet, une comparaison a été effectuée entre plusieurs approches agiles : Waterfall (en cascade), SCRUM, Kanban et Lean. L'analyse a révélé que SCRUM est particulièrement adaptée aux projets de développement logiciel de complexité élevée, aux exigences évolutives et aux délais contraints. SCRUM favorise une livraison incrémentale de valeur, une adaptation continue aux retours des parties prenantes et une transparence maximale sur l'avancement du projet. Par opposition aux approches en cascade, SCRUM permet de détecter et corriger rapidement les écarts par rapport aux objectifs.
+
+\subsection{Méthodologie Adoptée — SCRUM}
+La gestion de ce projet repose sur la méthodologie agile SCRUM, organisée selon les éléments suivants :
+
+\textbf{Organisation en sprints :} Le projet a été structuré en quatre sprints successifs de deux à trois semaines chacun, couvrant l'ensemble du cycle de vie du développement :
 
 \begin{longtable}{|m{2cm}|m{5cm}|m{6cm}|}
 \hline
@@ -93,8 +97,7 @@ Sprint 4 & Sécurisation complète, conformité RGPD, tests et déploiement sur 
 \label{tab:sprints}
 \end{longtable}
 
-\subsection{Rôles et cérémonies SCRUM}
-Les rôles SCRUM ont été adaptés au contexte académique du projet :
+\textbf{Rôles et cérémonies SCRUM :} Les rôles SCRUM ont été adaptés au contexte académique du projet :
 \begin{itemize}
     \item \textbf{Product Owner} : l'encadrante académique, chargée de valider les livrables et de prioriser le Product Backlog ;
     \item \textbf{Scrum Master} : l'étudiant (Khaled SAIDI), garant du respect de la méthodologie et de la résolution des obstacles ;
@@ -103,8 +106,7 @@ Les rôles SCRUM ont été adaptés au contexte académique du projet :
 
 Les cérémonies SCRUM suivies ont été : le Sprint Planning (définition des objectifs et des tâches en début de sprint), la Sprint Review (présentation des livrables à l'encadrante) et la Sprint Retrospective (analyse des points d'amélioration). Des points de suivi hebdomadaires ont été maintenus tout au long du projet.
 
-\subsection{Outils de gestion de projet}
-Les outils suivants ont été utilisés pour la gestion du projet et la collaboration :
+\textbf{Outils de gestion de projet :} Les outils suivants ont été utilisés pour la gestion du projet et la collaboration :
 \begin{itemize}
     \item \textbf{GitHub} : hébergement du code source, gestion des branches (Git Flow), revues de code et déclenchement des pipelines CI/CD ;
     \item \textbf{GitHub Projects} : tableau Kanban pour le suivi des tâches du Product Backlog et des User Stories en cours ;
@@ -113,4 +115,4 @@ Les outils suivants ont été utilisés pour la gestion du projet et la collabor
 \end{itemize}
 
 \section*{Conclusion}
-Ce chapitre a établi le cadre général dans lequel s'inscrit le projet : une université technologique tunisienne innovante (TEK-UP), un besoin opérationnel concret en matière de sécurité événementielle numérique, et une méthodologie de travail agile (SCRUM) permettant une livraison itérative et contrôlée de la solution. Les objectifs clairement formulés — sécurité multicouche, IA temps réel, conformité RGPD, déploiement cloud souverain — guident l'ensemble des choix techniques présentés dans les chapitres suivants. Le prochain chapitre s'attache à dresser l'état de l'art des domaines technologiques mobilisés par ce projet.
+Ce chapitre a établi le cadre général dans lequel s'inscrit le projet : une université technologique tunisienne innovante (TEK-UP), un besoin opérationnel concret en matière de sécurité événementielle numérique, les limites des solutions existantes, et une méthodologie de travail agile (SCRUM) permettant une livraison itérative et contrôlée de la solution. Le prochain chapitre présente l'état de l'art des domaines technologiques mobilisés par ce projet, permettant une compréhension des concepts et choix techniques avant d'aborder l'architecture détaillée du système.

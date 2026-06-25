@@ -1,11 +1,9 @@
-\chapter{Spécification des Besoins}
+\chapter{Architecture Système et Sélection Technologique}
 
 \section*{Introduction}
-Ce chapitre formalise l'ensemble des exigences du système à partir des objectifs définis au chapitre 1 et des concepts identifiés dans l'état de l'art. Il identifie les acteurs, spécifie les besoins fonctionnels au travers de diagrammes de cas d'utilisation UML, définit les exigences non fonctionnelles, et présente les études comparatives qui ont guidé les choix technologiques du projet.
+Ce chapitre formalise l'ensemble des exigences du système, puis établit la traçabilité entre ces exigences et les choix technologiques retenus. Il identifie d'abord les acteurs système, spécifie les besoins fonctionnels et non fonctionnels, présente la planification du projet en termes de sprints et de backlog, puis justifie les choix techniques par des études comparatives rigoureuses. L'objectif est de fournir une vue d'ensemble cohérente et traçable de l'architecture, garantissant que chaque composant technique répond à une exigence métier clairement établie.
 
-Les exigences présentées ci-après traduisent les besoins métier identifiés pour la plateforme événementielle, tout en intégrant les contraintes de sécurité, de conformité et d'expérience utilisateur propres au contexte du projet. Pour chaque exigence, le lien avec une fonctionnalité concrète est explicité afin de garantir la traçabilité entre les besoins et l'architecture définie au chapitre suivant.
-
-\section{Identification des Acteurs}
+\section{Identification des Acteurs Système}
 Le tableau \ref{tab:acteurs} présente les cinq acteurs identifiés, leur nature et leur rôle respectif au sein du système.
 
 \begin{longtable}{|m{3.5cm}|m{2cm}|m{8cm}|}
@@ -31,10 +29,12 @@ Odoo (ERP) & Système & Synchronise les données relatives aux événements et a
 \label{tab:acteurs}
 \end{longtable}
 
-\section{Spécification des Besoins Fonctionnels}
+\section{Extraction des Besoins Globaux}
+
+\subsection{Besoins Fonctionnels}
 La spécification des besoins fonctionnels traduit les attentes des parties prenantes en un ensemble structuré de cas d'utilisation, modélisés selon la notation UML. Cinq diagrammes de cas d'utilisation ont été élaborés, correspondant chacun à un module fonctionnel majeur de la plateforme.
 
-\subsection{Vue d'ensemble du système}
+\subsubsection{Vue d'ensemble du système}
 La vue d'ensemble offre une représentation macroscopique du système, organisant les cas d'utilisation en cinq packages thématiques.
 
 \begin{longtable}{|m{1.5cm}|m{5cm}|m{3cm}|m{2.5cm}|}
@@ -99,7 +99,7 @@ Administrer la plateforme & Dashboard d'administration & Interface admin + API R
 \label{tab:correspondance}
 \end{longtable}
 
-\subsection{Gestion des Événements et Authentification}
+\subsubsection{Gestion des Événements et Authentification}
 
 \begin{longtable}{|m{1.5cm}|m{5cm}|m{4cm}|m{2cm}|}
 \hline
@@ -138,7 +138,7 @@ UC\_O02 & Synchroniser les comptes & Odoo (ERP) & Normal \\
 \label{tab:uc_events}
 \end{longtable}
 
-\subsection{Déroulement des Réunions Virtuelles}
+\subsubsection{Déroulement des Réunions Virtuelles}
 
 \begin{longtable}{|m{1.5cm}|m{5cm}|m{4cm}|m{2cm}|}
 \hline
@@ -177,7 +177,7 @@ UC\_M12 & Créer des breakout rooms & Organisateur & Extend \\
 \label{tab:uc_meetings}
 \end{longtable}
 
-\subsection{Intelligence Artificielle — Chatbot et Traduction}
+\subsubsection{Intelligence Artificielle — Chatbot et Traduction}
 
 \begin{longtable}{|m{1.5cm}|m{6cm}|m{3cm}|m{2cm}|}
 \hline
@@ -208,7 +208,7 @@ UC\_I08 & Consulter l'historique de conversation & Utilisateur & Normal \\
 \label{tab:uc_ia}
 \end{longtable}
 
-\subsection{Gestion RGPD et Administration Système}
+\subsubsection{Gestion RGPD et Administration Système}
 
 \begin{longtable}{|m{1.5cm}|m{6cm}|m{3.5cm}|m{2cm}|}
 \hline
@@ -243,7 +243,7 @@ UC\_R10 & Générer un rapport de conformité RGPD & Administrateur & Extend \\
 \label{tab:uc_rgpd}
 \end{longtable}
 
-\section{Spécification des Besoins Non Fonctionnels}
+\subsection{Besoins Non Fonctionnels}
 Les besoins non fonctionnels définissent les qualités globales que le système doit présenter, indépendamment des fonctionnalités spécifiques qu'il offre.
 
 \begin{longtable}{|m{3cm}|m{6cm}|m{3cm}|}
@@ -271,9 +271,57 @@ Accessibilité & Sous-titres multilingues temps réel, compatibilité navigateur
 \label{tab:nfr}
 \end{longtable}
 
-\section{Études Comparatives des Outils Retenus}
+\section{Diagramme de Cas d'Utilisation Global}
 
-\subsection{Plateformes de visioconférence}
+\subsection{Différents Sous-Systèmes}
+La plateforme est structurée selon cinq sous-systèmes fonctionnels principaux : (1) Authentification \& Sécurité, (2) Gestion des Événements, (3) Communication temps réel (Visioconférence), (4) Intelligence Artificielle (Chatbot et Traduction), et (5) Conformité RGPD \& Administration.
+
+\subsection{Conception}
+Les cas d'utilisation présentés dans la section 3.2.1 forment un ensemble cohérent couvrant tous les interactions utilisateur et système. La traçabilité entre chaque cas d'utilisation et une exigence métier identifiée garantit que le développement reste aligné avec les objectifs du projet.
+
+\section{Planification du Projet}
+
+\subsection{Backlog du Produit}
+Le Product Backlog a été établi à partir des cas d'utilisation identifiés. Les user stories ont été estimées en points de complexité et priorisées selon leur valeur métier. Le Backlog comprend environ 45 user stories réparties sur 4 sprints, avec une priorité particulière donnée aux fonctionnalités de sécurité et d'authentification (Sprint 1-2), puis d'IA (Sprint 3) et finalement de conformité RGPD (Sprint 4).
+
+\subsection{Planification des Sprints}
+La planification des sprints a été documentée précédemment au chapitre 1, section 1.3.2. Chaque sprint livre un incrément de fonctionnalité testée et validée, suivant les éléments du tableau \ref{tab:sprints} établi au chapitre 1.
+
+\section{Étude Stratégique}
+
+\subsection{Environnement de Réalisation du Projet}
+
+\subsubsection{Technologies d'Infrastructure}
+L'environnement technique du projet s'articule autour de trois couches : la couche infrastructure (OVHcloud, serveurs virtuels Linux), la couche conteneurisation (Docker, Docker Compose), et la couche applicative (services Python, Odoo, Jitsi, APIs IA).
+
+\subsubsection{Chaîne de Développement}
+La chaîne de développement s'appuie sur GitHub pour la gestion du code source (Git Flow), Visual Studio Code comme éditeur principal, et une pipeline CI/CD déployée via GitHub Actions pour les tests et déploiements automatisés.
+
+\subsection{Environnement Matériel}
+Les ressources matérielles allouées comprennent :
+\begin{itemize}
+    \item Poste de développement : machine virtuelle Linux (2-4 vCPU, 4-8 GB RAM) ;
+    \item Serveurs OVHcloud : machines dédiées pour l'environnement de production (chiffrement matériel, isolation réseau, 99,9\% SLA) ;
+    \item Conteneurs Docker : déploiement microservices avec allocation de ressources par service.
+\end{itemize}
+
+\subsection{Environnement Logiciel}
+L'écosystème logiciel repose sur les composants suivants :
+\begin{itemize}
+    \item Système d'exploitation : Debian/Linux (stable, support long terme) ;
+    \item Runtime conteneurs : Docker 24.x, Docker Compose 2.x ;
+    \item Services applicatifs : Python 3.10+, Odoo 17, Jitsi Meet, API NLP (LLM) ;
+    \item Bases de données : PostgreSQL pour la persistance, Redis pour le cache et les sessions ;
+    \item Authentification : JWT RS256, TOTP (RFC 6238) via librairies Python ;
+    \item Chiffrement : TLS 1.3 (OpenSSL 3.x), SRTP pour les flux WebRTC ;
+    \item Monitoring : logs centralisés, métriques système de base.
+\end{itemize}
+
+\subsection{Étude Comparative}
+
+\subsubsection{Comparatif Technologique}
+
+\paragraph{Plateformes de Visioconférence}
 Le tableau \ref{tab:visio} compare les principales solutions de visioconférence selon les critères sécurité, souveraineté des données, personnalisation et compatibilité RGPD.
 
 \begin{longtable}{|m{3.5cm}|m{2.5cm}|m{2.5cm}|m{2.5cm}|m{1.5cm}|}
@@ -299,7 +347,7 @@ Jitsi Meet & TLS 1.3 + SRTP & Autohébergé & Totale & Oui (local) \\
 
 \textbf{Choix retenu : Jitsi Meet.} Son auto-hébergement garantit la souveraineté totale des données, son chiffrement natif SRTP est optimal pour WebRTC, et sa personnalisation complète permet l'intégration des tokens JWT pour le contrôle d'accès \cite{webrtc}.
 
-\subsection{Progiciels ERP}
+\paragraph{Progiciels ERP}
 
 \begin{longtable}{|m{4cm}|m{3.5cm}|m{2.5cm}|m{2.5cm}|}
 \hline
@@ -322,7 +370,7 @@ Odoo 17 & Oui (modules natifs + custom) & Oui (JSON-RPC, REST) & Open-source (LG
 
 \textbf{Choix retenu : Odoo 17.} Son architecture modulaire permet le développement du module personnalisé \texttt{ai\_healthcare\_event} pour gérer le cycle complet des événements (inscriptions, emails JWT, RGPD), sans coût de licence.
 
-\subsection{Solutions de chatbot et d'IA conversationnelle}
+\paragraph{Solutions de Chatbot et d'IA Conversationnelle}
 
 \begin{longtable}{|m{3.5cm}|m{3cm}|m{2cm}|m{2cm}|m{2cm}|}
 \hline
@@ -347,7 +395,7 @@ LLM local (API NLP) & Excellente & Oui & Oui (natif) & Gratuit (self-hosted) \\
 
 \textbf{Choix retenu : LLM déployé localement via API NLP.} Seule solution combinant compréhension contextuelle avancée, déploiement local garantissant la conformité RGPD, et indépendance totale vis-à-vis des API tierces payantes \cite{whisper}.
 
-\subsection{Fournisseurs d'infrastructure cloud}
+\paragraph{Fournisseurs d'Infrastructure Cloud}
 
 \begin{longtable}{|m{3cm}|m{3.5cm}|m{3cm}|m{3cm}|}
 \hline
@@ -372,7 +420,11 @@ OVHcloud & France (Roubaix, Strasbourg) & Natif, DPA contractuel & Prévisible, 
 
 \textbf{Choix retenu : OVHcloud.} Sa souveraineté européenne est un critère décisif pour la conformité RGPD \cite{rgpd}, sa tarification prévisible facilite la maîtrise des coûts et ses datacenters français éliminent toute incertitude sur la localisation des données personnelles.
 
-\section{Justification Globale des Choix Techniques}
+\section{Présentation de l'Architecture Globale du Projet}
+
+Cette section sera enrichie du diagramme d'architecture macroscopique de la plateforme, montrant les interactions entre les composants (Services d'Authentification, Jitsi Meet, APIs IA, Odoo, Bases de Données) et les technologies de support (Docker, OVHcloud, CI/CD). L'architecture respecte une approche microservices avec déploiement conteneurisé et cloud-native.
+
+\section*{Justification Globale des Choix Techniques}
 L'ensemble des choix technologiques retenus forme un écosystème cohérent répondant aux cinq axes stratégiques du projet :
 
 \begin{longtable}{|m{3.5cm}|m{3.5cm}|m{6cm}|}
@@ -405,4 +457,4 @@ Normes de sécurité & NIST CSF 2.0 + STRIDE & Référentiels reconnus pour la s
 \end{longtable}
 
 \section*{Conclusion}
-Ce chapitre a établi la spécification complète du système, depuis l'identification des acteurs jusqu'à la justification des choix technologiques. Les besoins fonctionnels formalisés en cas d'utilisation UML et les six catégories d'exigences non fonctionnelles constituent le contrat de référence pour la conception détaillée présentée au chapitre suivant. Les études comparatives ont démontré la pertinence et la cohérence de l'écosystème technologique retenu — Jitsi, Odoo, LLM local (Chatbot IA), Docker, OVHcloud — au regard des contraintes sécuritaires, réglementaires et de performance du projet. Le chatbot IA, fondé sur un LLM déployé localement, constitue l'innovation principale différenciant la plateforme des solutions concurrentes.
+Ce chapitre a formalisé les besoins du système, présenté les choix technologiques et établi la traçabilité entre les exigences métier, la planification projet et l'architecture globale. Les besoins fonctionnels spécifiés en 35+ cas d'utilisation UML et les exigences non fonctionnelles multi-catégories constituent le contrat de référence pour le développement. Les études comparatives rigoureuses ont justifié chaque choix technologique : Jitsi Meet pour sa souveraineté et sécurité native, Odoo 17 pour sa flexibilité modulaire, le LLM local pour son indépendance RGPD, Docker pour la portabilité et OVHcloud pour la conformité européenne. L'architecture microservices conteneurisée, déployée sur infrastructure cloud souveraine, garantit la scalabilité et la sécurité exigées pour une plateforme événementielle sensible aux données. Le prochain chapitre détaille l'implémentation de cette architecture au travers des quatre sprints de développement.
